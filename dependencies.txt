@@ -1,0 +1,4 @@
+https://pypi.org/project/numpy/
+https://pypi.org/project/PeakUtils/
+https://anaconda.org/conda-forge/opencv
+https://pypi.org/project/PyQt5/
