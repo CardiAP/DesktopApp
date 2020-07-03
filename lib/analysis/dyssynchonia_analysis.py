@@ -1,7 +1,7 @@
 import numpy as np
 from peakutils import indexes
 
-from DesktopApp.lib.image.image_data import split_vertically_by
+from lib.image.image_data import split_vertically_by
 
 
 def analyze_image(image, min_dist_between_max_peaks, slice_width=0):
@@ -10,7 +10,7 @@ def analyze_image(image, min_dist_between_max_peaks, slice_width=0):
                        split_vertically_by(image, slice_width)] if slice_width > 0 else []
 
     return ({
-        "hole_image": image_analysis,
+        "image": image_analysis,
         "slices": slices_analysis
     })
 

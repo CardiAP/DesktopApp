@@ -7,6 +7,9 @@ import numpy as np
 # For smoothing we are using a bilateral filter https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html#bilateralfilter
 def get_image_data(image_name):
     image_matrix = cv2.imread(image_name, cv2.IMREAD_GRAYSCALE)
+    if image_matrix is None:
+        raise ValueError(f'Image {image_name} not found')
+
     # TODO estos parametros queremos cambiarlos dependiendo de la imagen?
     return cv2.bilateralFilter(image_matrix, 20, 300, 300)
 
