@@ -2,19 +2,14 @@ import cv2
 import numpy as np
 
 
-# Receives a path and name of an image in tif format (the path could be absolute or relative)
-# Returns 2d matrix with the intensity of each pixel in each position
-# For smoothing we are using a bilateral filter https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html#bilateralfilter
-def get_image_data(image_name):
-    import cv2
-    image_matrix = cv2.imread(image_name)
-    if image_matrix is None:
-        raise ValueError(f'Image {image_name} not found')
-
+# Receives 2d matrix with the intensity of each pixel in each position
+# Returns 2d matrix with the intensity of each pixel in each position in gray scale an smoothed
+# For smoothing we are using a bilateral filter:
+# https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html#bilateralfilter
+def get_image_data(image):
     # TODO estos parametros queremos cambiarlos dependiendo de la imagen?
-    image_matrix = cv2.bilateralFilter(image_matrix, 20, 300, 300)
+    image_matrix = cv2.bilateralFilter(image, 20, 300, 300)
     image_matrix = cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
-    
     return image_matrix 
 
 

@@ -1,6 +1,5 @@
 import numpy as np
 from peakutils import indexes
-
 from lib.image.image_data import split_vertically_by
 
 
@@ -33,7 +32,8 @@ def _analyze_matrix(matrix, min_dist_between_max_peaks):
         "min_peaks_intensities": min_peaks_intensities,
         "amplitudes": _calculate_amplitudes(max_peaks_intensities, min_peaks_intensities),
         "times_to_peaks": _calculate_time_to_peaks(max_peaks_positions, min_peaks_positions),
-        "times_to_half_peaks": _calculate_times_to_half_peaks(intensities, max_peaks_positions, min_peaks_positions)
+        "times_to_half_peaks": _calculate_times_to_half_peaks(intensities, max_peaks_positions, min_peaks_positions),
+        "tau_s": 0
 
     })
 
@@ -41,20 +41,20 @@ def _analyze_matrix(matrix, min_dist_between_max_peaks):
 def _calculate_times_to_half_peaks(intensities, max_peaks_positions, min_peaks_positions):
     half_time_to_peaks = []
     for max_min in np.column_stack((max_peaks_positions[1:len(max_peaks_positions)], min_peaks_positions)):
-        max_index = max_min[0]
-        min_index = max_min[1]
+        max_index = int(max_min[0])
+        min_index = int(max_min[1])
 
         half_intensity_between_peaks = intensities[max_index] - ((intensities[max_index] - intensities[min_index]) / 2)
         
-        intensities_between_peaks = intensities[max_index:min_index]
-        half_max_index = None
+        half_max_index = 0
+        intensities_between_peaks = intensities[min_index:max_index]
 
         for i in range(0, len(intensities_between_peaks)):
-            if intensities_between_peaks[i] < half_intensity_between_peaks:
+            if intensities_between_peaks[i] > half_intensity_between_peaks:
                 half_max_index = i
                 break
 
-        half_time_to_peaks.append(max_min[0] - half_max_index + max_min[0])
+        half_time_to_peaks.append(max_index - half_max_index)
 
     return half_time_to_peaks
 
