@@ -8,12 +8,14 @@ import numpy as np
 def get_image_data(image_name):
     import cv2
     image_matrix = cv2.imread(image_name)
-    image_matrix = cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
     if image_matrix is None:
         raise ValueError(f'Image {image_name} not found')
 
     # TODO estos parametros queremos cambiarlos dependiendo de la imagen?
-    return cv2.bilateralFilter(image_matrix, 20, 300, 300)
+    image_matrix = cv2.bilateralFilter(image_matrix, 20, 300, 300)
+    image_matrix = cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
+    
+    return image_matrix 
 
 
 def crop_vertical(image_matrix, pixel_start, pixel_end):
