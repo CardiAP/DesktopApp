@@ -18,7 +18,7 @@ def analyze_image(image, min_dist_between_max_peaks, slice_width=0):
 
 
 def _analyze_matrix(matrix, min_dist_between_max_peaks):
-    intensities = np.asarray(_sum_columns(matrix), dtype=np.int16)
+    intensities = np.asarray(_mean_columns(matrix), dtype=np.int16)
     max_peaks_positions = _max_peaks_positions(intensities, min_dist_between_max_peaks)
     max_peaks_intensities = _intensities_in_positions(intensities, max_peaks_positions)
     min_peaks_positions = _min_peaks_positions(intensities, max_peaks_positions)
@@ -72,8 +72,8 @@ def _calculate_amplitudes(max_peaks_intensities, min_peaks_intensities):
     return amplitudes
 
 
-def _sum_columns(slice):
-    return [np.sum(row) for row in slice]
+def _mean_columns(slice):
+    return [np.mean(row) for row in slice]
 
 
 def _max_peaks_positions(a_slice, min_dist_between_max_peaks):
