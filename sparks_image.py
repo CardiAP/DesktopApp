@@ -3,10 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 
-def __init__(self, path, photo_name, x_calibration):
-    self.path = path
-    self.photo_name = photo_name
-    self.x_calibration = x_calibration
+# def __init__(self, path, photo_name, x_calibration):
+#     self.path = path
+#     self.photo_name = photo_name
+#     self.x_calibration = x_calibration
 def select_roi (image):
     fromCenter = False
     showCrosshair = False
@@ -62,12 +62,6 @@ def track_contours (c, image, original, track_number):
     img_col_mean = [x.mean() for x in img_col_mean]
     img_row_mean = [x.mean() for x in img_row_mean]
     return img_row_mean , img_col_mean
-def fitExponent(tList,yList,ySS=0):
-    bList = [log(max(y-ySS,1e-6)) for y in yList]
-    (w,residuals,rank,sing_vals) = lstsq(matrix([[1,t] for t in tList]),matrix(bList).T)
-    tau = -1.0/w[1,0]
-    amplitude = exp(w[0,0])
-    return (amplitude,tau)
 # Automatic brightness and contrast optimization with optional histogram clipping
 def automatic_brightness_and_contrast(image, clip_hist_percent=10):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -111,3 +105,30 @@ def automatic_brightness_and_contrast(image, clip_hist_percent=10):
 
     auto_result = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
     return (auto_result, alpha, beta)
+def image_process (image):
+    if image is None:
+        print("Check file path")
+    else:
+        r = select_roi (image) # Select ROI
+        imCrop = crop_image (image, r)    # Crop image
+        display_image ('Image' , imCrop)    # Display cropped image
+        
+    auto_result, alpha, beta = automatic_brightness_and_contrast(imCrop)
+    cv2.imshow('auto_result', auto_result)
+    display_image ('Image' , imCrop)
+
+    dilate = filtration (auto_result)[0]
+    original = filtration (auto_result)[1]
+
+    cnts = find_contourns (dilate)    # Find contours
+
+    # Iterate thorugh contours and filter for ROI
+    list_img_col = []
+    track_number = 0
+    for c in cnts:
+        img_col_mean = track_contours (c, auto_result, original, track_number) [0]
+        track_number +=1
+        list_img_col.append (img_col_mean)
+
+    display_image ('image' , auto_result)
+    return list_img_col
