@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
+
 def __init__(self, path, photo_name, x_calibration):
     self.path = path
     self.photo_name = photo_name
@@ -47,10 +49,10 @@ def plot_histogram (y_data, nombre_foto, label_x, label_y):
     plt.xlabel(label_x)
     plt.ylabel(label_y)
     plt.show()
-def track_contours (c, image, track_number):
+def track_contours (c, image, original, track_number):
     x,y,w,h = cv2.boundingRect(c)
-    cv2.rectangle(auto_result, (x, y), (x + w, y + h), (255,255,0), 2)
-    cv2.putText(auto_result, str(track_number), (x-2, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0),2)
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255,255,0), 2)
+    cv2.putText(image, str(track_number), (x-2, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0),2)
     ROI = original[y:y+h, x:x+w]
     x_data = np.asarray(range(x,x+w),dtype=np.float64)
     #análisis de cada spark
