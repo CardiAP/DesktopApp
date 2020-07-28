@@ -1,12 +1,8 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from PIL import Image
 
-# def __init__(self, path, photo_name, x_calibration):
-#     self.path = path
-#     self.photo_name = photo_name
-#     self.x_calibration = x_calibration
 def select_roi (image):
     fromCenter = False
     showCrosshair = False
@@ -43,12 +39,12 @@ def find_contourns (image):
     cnts = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
     return cnts
-def plot_histogram (y_data, nombre_foto, label_x, label_y):
-    plt.plot(y_data)
-    plt.title(nombre_foto)
-    plt.xlabel(label_x)
-    plt.ylabel(label_y)
-    plt.show()
+# def plot_histogram (y_data, nombre_foto, label_x, label_y):
+#     plt.plot(y_data)
+#     plt.title(nombre_foto)
+#     plt.xlabel(label_x)
+#     plt.ylabel(label_y)
+#     plt.show()
 def track_contours (c, image, original, track_number):
     x,y,w,h = cv2.boundingRect(c)
     cv2.rectangle(image, (x, y), (x + w, y + h), (255,255,0), 2)
@@ -98,11 +94,6 @@ def automatic_brightness_and_contrast(image, clip_hist_percent=10):
 
     # Calculate new histogram with desired range and show histogram
     new_hist = cv2.calcHist([gray],[0],None,[256],[minimum_gray,maximum_gray])
-    plt.plot(hist)
-    plt.plot(new_hist)
-    plt.xlim([0,256])
-    plt.show()
-
     auto_result = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
     return (auto_result, alpha, beta)
 def image_process (image):
