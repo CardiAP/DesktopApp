@@ -100,35 +100,50 @@ def time_to_peak (cantidad_sparks, maximum_time, minimum_time):
         sp_ttp = maximum_time[sp] - minimum_time [sp]
         sparks_tiempo_al_pico.append(sp_ttp)
     return sparks_tiempo_al_pico
-#Acá me quedé
+
+def fitExponent(tList,yList,ySS=0):
+    bList = [log(max(y-ySS,1e-6)) for y in yList]
+    (w,residuals,rank,sing_vals) = lstsq(matrix([[1,t] for t in tList]),matrix(bList).T, rcond=None)
+    tau = -1.0/w[1,0]
+    amplitude = exp(w[0,0])
+    return (amplitude,tau)
+
 # Calcula el tiempo al 50% del pico de cada pico de la selección
-def sparks_tiempo_pico50 ():
+def sparks_ttpeak50 (cantidad_sparks, list_img_col, maximum_int, minimum_int, maximum_time, minimum_time):
     sparks_tiempo_pico50 = []
     for sp in range  (0, cantidad_sparks):
-        sp_amp50 = (out_sparks['intensidad_maxima'] [sp] + out_sparks['intensidad_minima'] [sp])/2   
-        x1 = np.asarray (range (int(out_sparks['tiempo_minimo'] [sp]), int(out_sparks['tiempo_maximo'] [sp]+1))) 
-        y1 = np.asarray (list_img_col [sp] [int(out_sparks['tiempo_minimo'] [sp]) : int(out_sparks['tiempo_maximo'] [sp]+1)])
+        sp_amp50 = (maximum_int [sp] + minimum_int [sp])/2   
+        x1 = np.asarray (range (int(minimum_time [sp]), int(maximum_time [sp]+1))) 
+        y1 = np.asarray (list_img_col [sp] [int(minimum_time [sp]) : int(maximum_time [sp]+1)])
         ySS = 0
         (amplitudeEst,tauEst) = fitExponent(x1,y1,ySS)
         yEst = amplitudeEst*(exp(-x1/tauEst))+ySS
         sp_ttp50 = (np.log((sp_amp50 -ySS)/ amplitudeEst))*(-tauEst)
         sparks_tiempo_pico50.append (sp_ttp50)
+    return sparks_tiempo_pico50
 
-# Calculo del FDHM
-def sparks_tiempo_pico50_2 ():
+# Para el calculo del FDHM
+def sparks_ttpeak50_2 (cantidad_sparks, list_img_col, maximum_int, minimum_int, maximum_time, minimum_time):
     sparks_tiempo_pico50_2 = []
     for sp in range  (0, cantidad_sparks):
-        sp_amp50 = (out_sparks['intensidad_maxima'] [sp] + out_sparks['intensidad_minima'] [sp])/2
-        x2 = np.asarray (range (int(out_sparks['tiempo_maximo'] [sp]), int(out_sparks['tiempo_valle'] [sp]+1))) 
-        y2 = np.asarray (list_img_col [sp] [int(out_sparks['tiempo_maximo'] [sp]) : int(out_sparks['tiempo_valle'] [sp]+1)])
+        sp_amp50 = (maximum_int [sp] + minimum_int [sp])/2
+        x2 = np.asarray (range (int(maximum_time [sp]), int(minimum_time [sp]+1))) 
+        y2 = np.asarray (list_img_col [sp] [int(maximum_time [sp]) : int(minimum_time [sp]+1)])
+        ySS = 0
         (amplitudeEst2,tauEst2) = fitExponent(x2,y2,ySS)  
         yEst2 = amplitudeEst2*(exp(-x2/tauEst2))+ySS
         sp_ttp50_2 = (np.log((sp_amp50 -ySS)/ amplitudeEst2))*(-tauEst2)
         sparks_tiempo_pico50_2.append (sp_ttp50_2)
+    return sparks_tiempo_pico50_2
 
-def fitExponent(tList,yList,ySS=0):
-    bList = [log(max(y-ySS,1e-6)) for y in yList]
-    (w,residuals,rank,sing_vals) = lstsq(matrix([[1,t] for t in tList]),matrix(bList).T)
-    tau = -1.0/w[1,0]
-    amplitude = exp(w[0,0])
-    return (amplitude,tau)
+# Aplico la función para tau a la selección
+def tau(cantidad_sparks, list_img_col, maximum_time, minimum_time):
+    sp_tau = []
+    for sp in range (0, cantidad_sparks):
+        x = np.asarray(list (range(int(maximum_time [sp]), int(minimum_time [sp])+1))) #* x_calibracion
+        y = np.asarray(list_img_col[sp][int(maximum_time [sp]) : int(minimum_time [sp])+1],dtype=np.float64)
+        ySS = 0
+        (amplitudeEst,tauEst) = fitExponent(x,y,ySS)
+        yEst = amplitudeEst*(exp(-x/tauEst))+ySS
+        sp_tau.append (tauEst)
+    return sp_tau
