@@ -115,11 +115,14 @@ def image_process (image):
 
     # Iterate thorugh contours and filter for ROI
     list_img_col = []
+    list_img_row = []
     track_number = 0
     for c in cnts:
         img_col_mean = track_contours (c, auto_result, original, track_number) [0]
+        img_row_mean = track_contours (c, auto_result, original, track_number) [1]
         track_number +=1
         list_img_col.append (img_col_mean)
+        list_img_row.append (img_row_mean)
 
     display_image ('image' , auto_result)
-    return list_img_col
+    return list_img_col, list_img_row
