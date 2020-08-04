@@ -118,8 +118,16 @@ def image_process (image):
     list_img_row = []
     track_number = 0
     for c in cnts:
-        img_col_mean = track_contours (c, auto_result, original, track_number) [0]
-        img_row_mean = track_contours (c, auto_result, original, track_number) [1]
+        img_mean = track_contours (c, auto_result, original, track_number)
+        img_col_mean = img_mean [0]
+        img_row_mean = img_mean [1]
+            #gráfico de histograma
+        plt.plot(img_col_mean)
+        plt.plot(img_row_mean)
+        plt.title('nombre_foto')
+        plt.xlabel("time")
+        plt.ylabel("Intensity")
+        plt.show()
         track_number +=1
         list_img_col.append (img_col_mean)
         list_img_row.append (img_row_mean)

@@ -66,13 +66,12 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
 
     for i in range (0,cantidad_sparks):
         picos = minimo_bl (list_img_col[i])
-        lista_min = []
+        lista_mins = []
         for minimo in picos:
             picomenor = int(data_time_values[i])
             if minimo > picomenor:
-                print (minimo, picomenor)
                 y_min = list_img_col[i] [minimo]
-                lista_min.append((minimo,y_min))
+                lista_mins.append((minimo,y_min))
         try:
             minimo_lista_mins = min(lista_min, key = lambda t: t[1])
             sparks_tiempo_n.append(minimo_lista_mins[0])
@@ -82,6 +81,7 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
             minimimo = list_img_col[i].index(minimo_lista_mins)
             sparks_tiempo_n.append(minimimo)
             sparks_intensidad_n.append (minimo_lista_mins)
+            
     return sparks_tiempo0, sparks_intensidad0, sparks_tiempo_n, sparks_intensidad_n
 
 
@@ -127,8 +127,11 @@ def sparks_ttpeak50_2 (cantidad_sparks, list_img_col, maximum_int, minimum_int, 
     sparks_tiempo_pico50_2 = []
     for sp in range  (0, cantidad_sparks):
         sp_amp50 = (maximum_int [sp] + minimum_int [sp])/2
+        print (maximum_time [sp], minimum_time [sp]+1)
         x2 = np.asarray (range (int(maximum_time [sp]), int(minimum_time [sp]+1))) 
+        print (len(x2))
         y2 = np.asarray (list_img_col [sp] [int(maximum_time [sp]) : int(minimum_time [sp]+1)])
+        print (len(y2))
         ySS = 0
         (amplitudeEst2,tauEst2) = fitExponent(x2,y2,ySS)  
         yEst2 = amplitudeEst2*(exp(-x2/tauEst2))+ySS
@@ -203,6 +206,7 @@ def analysis_process (list_img_col, list_img_row):
     out_sparks = pd.DataFrame(out_sparks.values, columns = ['tiempo_maximo', 'intensidad_maxima'])
 
     minim = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo'])
+    print (minim)
     out_sparks['tiempo_minimo'] = minim[0]
     out_sparks['intensidad_minima'] = minim[1]
     out_sparks['tiempo_valle'] = minim[2]
@@ -227,7 +231,7 @@ def analysis_process (list_img_col, list_img_row):
 
     out_sparks['fullDuration'] = out_sparks['tiempo_valle'] - out_sparks['tiempo_minimo']
 
-    full_width = width (list_img_row, out_sparks['tiempo_maximo'])[0]
+    full_width = width (list_img_row, out_sparks_row['tiempo_maximo'])[0]
     sparks_tiempo_pico50 = width (list_img_row, out_sparks['tiempo_maximo'])[1]
     sparks_tiempo_pico50_2 = width (list_img_row, out_sparks['tiempo_maximo'])[2]
     out_sparks['fullWidth'] = full_width
