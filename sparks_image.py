@@ -27,11 +27,11 @@ def rotation (image_path, degrees):
     im = Image.fromarray(image_path)
     im = im.rotate(degrees)
     im = numpy.array(im)
-def filtration (image):
+def filtration (image,factor, baseline):
     original = image.copy()
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 50)
-    canny = cv2.Canny(blurred, 100, 250, 400)
+    canny = cv2.Canny(blurred, baseline, factor*baseline, 400)
     kernel = np.ones((5,5),np.uint8)
     dilate = cv2.dilate(canny, kernel, iterations=1)
     return dilate, original
@@ -107,9 +107,9 @@ def image_process (image):
     auto_result, alpha, beta = automatic_brightness_and_contrast(imCrop)
     cv2.imshow('auto_result', auto_result)
     display_image ('Image' , imCrop)
-
-    dilate = filtration (auto_result)[0]
-    original = filtration (auto_result)[1]
+    filtered = filtration (auto_result, 2.5, 100)
+    dilate = filtered[0]
+    original = filtered[1]
 
     cnts = find_contourns (dilate)    # Find contours
 
@@ -118,11 +118,11 @@ def image_process (image):
     list_img_row = []
     track_number = 0
     for c in cnts:
-        img_col_mean = track_contours (c, auto_result, original, track_number) [0]
-        img_row_mean = track_contours (c, auto_result, original, track_number) [1]
+        img_mean = track_contours (c, auto_result, original, track_number)
+        img_col_mean = img_mean [0]
+        img_row_mean = img_mean [1]
         track_number +=1
         list_img_col.append (img_col_mean)
         list_img_row.append (img_row_mean)
-
     display_image ('image' , auto_result)
     return list_img_col, list_img_row

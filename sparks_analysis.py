@@ -44,7 +44,6 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
     sparks_intensidad0 = []        
     sparks_tiempo_n = []
     sparks_intensidad_n = []
-
     for i in range (0,cantidad_sparks):
         picos = minimo_bl (list_img_col[i])
         lista_min = []
@@ -67,21 +66,21 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
 
     for i in range (0,cantidad_sparks):
         picos = minimo_bl (list_img_col[i])
-        lista_min = []
+        lista_mins = []
         for minimo in picos:
             picomenor = int(data_time_values[i])
             if minimo > picomenor:
                 y_min = list_img_col[i] [minimo]
-                lista_min.append((minimo,y_min))
+                lista_mins.append((minimo,y_min))
         try:
-            minimo_lista_mins = min(lista_min, key = lambda t: t[1])
-            sparks_tiempo_n.append(minimo_lista_mins[0])
-            sparks_intensidad_n.append (minimo_lista_mins[1])
+            minimo_lista_min = min(lista_mins, key = lambda t: t[1])
+            sparks_tiempo_n.append(minimo_lista_min[0])
+            sparks_intensidad_n.append (minimo_lista_min[1])
         except ValueError:
-            minimo_lista_mins = min (list_img_col[i][int(data_time_values[i]):len (list_img_col[i])])
-            minimimo = list_img_col[i].index(minimo_lista_mins)
-            sparks_tiempo_n.append(minimimo)
-            sparks_intensidad_n.append (minimo_lista_mins)
+            minimo_lista_min = min (list_img_col[i][int(data_time_values[i]):])
+            minimimo_n = list_img_col[i].index(minimo_lista_min)
+            sparks_tiempo_n.append(minimimo_n)
+            sparks_intensidad_n.append (minimo_lista_min)   
     return sparks_tiempo0, sparks_intensidad0, sparks_tiempo_n, sparks_intensidad_n
 
 
@@ -149,23 +148,21 @@ def tau(cantidad_sparks, list_img_col, maximum_time, minimum_time):
     return sp_tau
 
 ##  Calculo fullWidth
-def width (list_img_row, max_time):
-    cantidad_sparks = maximo_spark(list_img_row)[0]
-    datos_tiempos_row = maximo_spark(list_img_row)[1]
-    datos_intensidades_row = maximo_spark(list_img_row)[2]
+def width (list_img_row):
+    maxim_row = maximo_spark(list_img_row)
+    cantidad_sparks = maxim_row[0]
+    datos_tiempos_row = maxim_row[1]
+    datos_intensidades_row = maxim_row[2]
 
     Columns = ['Spark_'+ str(x) for x in range(0, cantidad_sparks)]
     out_sparks_row = pd.DataFrame([datos_tiempos_row.values(),datos_intensidades_row.values()], columns = Columns).T
     out_sparks_row = pd.DataFrame(out_sparks_row.values, columns = ['tiempo_maximo', 'intensidad_maxima'])
 
-    sparks_tiempo0_row = minimo_sparks (cantidad_sparks, list_img_row, max_time) [0]
-    sparks_intensidad0_row = minimo_sparks (cantidad_sparks, list_img_row, max_time) [1]
-    sparks_tiempo_n_row = minimo_sparks (cantidad_sparks, list_img_row, max_time) [2]
-    sparks_intensidad_n_row = minimo_sparks (cantidad_sparks, list_img_row, max_time) [3]
-    out_sparks_row['tiempo_minimo'] = sparks_tiempo0_row
-    out_sparks_row['intensidad_minima'] = sparks_intensidad0_row
-    out_sparks_row['tiempo_valle'] = sparks_tiempo_n_row
-    out_sparks_row['intensidad_valle'] = sparks_intensidad_n_row
+    minim_row =  minimo_sparks (cantidad_sparks, list_img_row, datos_tiempos_row)
+    out_sparks_row['tiempo_minimo'] = minim_row [0]
+    out_sparks_row['intensidad_minima'] = minim_row [1]
+    out_sparks_row['tiempo_valle'] = minim_row [2]
+    out_sparks_row['intensidad_valle'] = minim_row [3]
 
     # Calculo del FWHM
 
@@ -195,22 +192,21 @@ def width (list_img_row, max_time):
     return full_width, sparks_tiempo_pico50, sparks_tiempo_pico50_2
 
 def analysis_process (list_img_col, list_img_row):
-    cantidad_sparks = maximo_spark(list_img_col)[0]
-    datos_tiempos = maximo_spark(list_img_col)[1]
-    datos_intensidades = maximo_spark(list_img_col)[2]
+    maxim = maximo_spark(list_img_col)
+    cantidad_sparks = maxim[0]
+    datos_tiempos = maxim[1]
+    datos_intensidades = maxim[2]
 
     Columns = ['Spark_'+ str(x) for x in range(0, cantidad_sparks)]
     out_sparks = pd.DataFrame([datos_tiempos.values(),datos_intensidades.values()], columns = Columns).T
     out_sparks = pd.DataFrame(out_sparks.values, columns = ['tiempo_maximo', 'intensidad_maxima'])
 
-    sparks_tiempo0 = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo']) [0]
-    sparks_intensidad0 = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo']) [1]
-    sparks_tiempo_n = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo']) [2]
-    sparks_intensidad_n = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo']) [3]
-    out_sparks['tiempo_minimo'] = sparks_tiempo0
-    out_sparks['intensidad_minima'] = sparks_intensidad0
-    out_sparks['tiempo_valle'] = sparks_tiempo_n
-    out_sparks['intensidad_valle'] = sparks_intensidad_n
+    minim = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo'])
+    
+    out_sparks['tiempo_minimo'] = minim[0]
+    out_sparks['intensidad_minima'] = minim[1]
+    out_sparks['tiempo_valle'] = minim[2]
+    out_sparks['intensidad_valle'] = minim[3]
 
     sparks_amplitud = sparks_amplitude(cantidad_sparks, out_sparks['intensidad_maxima'], out_sparks['intensidad_minima'])
     out_sparks['amplitud'] = sparks_amplitud
@@ -231,9 +227,9 @@ def analysis_process (list_img_col, list_img_row):
 
     out_sparks['fullDuration'] = out_sparks['tiempo_valle'] - out_sparks['tiempo_minimo']
 
-    full_width = width (list_img_row, out_sparks['tiempo_maximo'])[0]
-    sparks_tiempo_pico50 = width (list_img_row, out_sparks['tiempo_maximo'])[1]
-    sparks_tiempo_pico50_2 = width (list_img_row, out_sparks['tiempo_maximo'])[2]
+    full_width = width (list_img_row)[0]
+    sparks_tiempo_pico50 = width (list_img_row)[1]
+    sparks_tiempo_pico50_2 = width (list_img_row)[2]
     out_sparks['fullWidth'] = full_width
     out_sparks['FWHM'] =[A - B for (A, B) in zip(sparks_tiempo_pico50_2, sparks_tiempo_pico50)]
     return out_sparks
