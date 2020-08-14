@@ -16,7 +16,6 @@ def analyze_image(image, min_dist_between_max_peaks, calibration, slice_width=0)
         "slices": slices_analysis
     })
 
-
 # PRIVATE FUNCTIONS
 
 
@@ -41,11 +40,14 @@ def _analyze_matrix(matrix, min_dist_between_max_peaks, calibration):
 
 
 def _calculate_tau(times, intensities):
-    x_axis = np.asarray([[1, t] for t in times])
-    y_axis = np.asarray([log(intensity) for intensity in intensities]).T
-    (w, residuals, rank, sing_vals) = lstsq(x_axis, y_axis)
-    tau = -1.0 / w[0]
-    return tau
+    if len(times) == 0 or len(intensities) == 0:
+        return 0
+    else:
+        x_axis = np.asarray([[1, t] for t in times])
+        y_axis = np.asarray([log(intensity) for intensity in intensities]).T
+        (w, residuals, rank, sing_vals) = lstsq(x_axis, y_axis)
+        tau = -1.0 / w[0]
+        return tau
 
 
 def _calculate_taus(intensities, max_peaks_positions, min_peaks_positions, calibration):
@@ -98,13 +100,19 @@ def _calculate_amplitudes(max_peaks_intensities, min_peaks_intensities):
 
 
 def _mean_columns(slice):
-    return [np.mean(row) for row in slice]
+    return np.asarray([np.mean(row) for row in slice])
 
 
 def _max_peaks_positions(a_slice, min_dist_between_max_peaks):
-    max_peaks = indexes(a_slice, thres=1.0 / max(a_slice), min_dist=min_dist_between_max_peaks)
+    possible_max_peaks = indexes(a_slice, thres=1.0 / max(a_slice), min_dist=min_dist_between_max_peaks)
     intensity_avg = sum(a_slice) / len(a_slice)
-    return [max_peak for max_peak in max_peaks if a_slice[max_peak] > intensity_avg]
+    max_peaks = [max_peak for max_peak in possible_max_peaks if a_slice[max_peak] > intensity_avg]
+
+    if len(max_peaks) == 0: raise ValueError("Peaks not found")
+    if len(max_peaks) == 1:
+        max_peaks = [0, max_peaks[0], (len(a_slice) - 1)]
+
+    return max_peaks
 
 
 def _intensities_in_positions(intensities, positions):
@@ -120,9 +128,15 @@ def _min_peaks_positions(intensities, max_peaks):
 # This method will return an array of the indexes of the minumum candidates
 # F.g minumum_candidates(0, [4,3,2,1,2,3,2,1,0,1,2,3]) will return [3,8]
 def _minimum_candidates(offset, intensities):
-    return ((np.diff(np.sign(np.diff(intensities))) > 0).nonzero()[0] + 1) + offset
+    candidates = ((np.diff(np.sign(np.diff(intensities))) > 0).nonzero()[0] + 1) + offset
+    if len(candidates) < 1:
+        return np.append(0, candidates)
+    else:
+        return candidates
 
 
+
+# For the calculation of minumum peaks we need at least 1 maximum peak
 def _all_minimum_candidates(intensities, max_peaks_positions):
     all_minimum_candidates = []
     for i in range(0, len(max_peaks_positions) - 1):
