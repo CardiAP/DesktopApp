@@ -96,7 +96,7 @@ def automatic_brightness_and_contrast(image, clip_hist_percent=10):
     new_hist = cv2.calcHist([gray],[0],None,[256],[minimum_gray,maximum_gray])
     auto_result = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
     return (auto_result, alpha, beta)
-def image_process (image):
+def image_process (image,path):
     if image is None:
         print("Check file path")
     else:
@@ -106,7 +106,7 @@ def image_process (image):
         
     auto_result, alpha, beta = automatic_brightness_and_contrast(imCrop)
     cv2.imshow('auto_result', auto_result)
-    display_image ('Image' , imCrop)
+    display_image ('Image.png' , imCrop)
     filtered = filtration (auto_result, 2.5, 100)
     dilate = filtered[0]
     original = filtered[1]
