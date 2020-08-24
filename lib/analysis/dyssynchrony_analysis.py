@@ -139,12 +139,14 @@ def _minimum_candidates(offset, intensities):
 # For the calculation of minumum peaks we need at least 1 maximum peak
 def _all_minimum_candidates(intensities, max_peaks_positions):
     all_minimum_candidates = []
+    current_peak = max_peaks_positions[0]
+    intensities_before_peak = intensities[0:current_peak]
+    all_minimum_candidates.append(_minimum_candidates(current_peak, intensities_before_peak))
     for i in range(0, len(max_peaks_positions) - 1):
         current_peak = max_peaks_positions[i]
         next_peak = max_peaks_positions[i + 1]
         intensities_between_peaks = intensities[current_peak:next_peak]
         all_minimum_candidates.append(_minimum_candidates(current_peak, intensities_between_peaks))
-
     return all_minimum_candidates
 
 
