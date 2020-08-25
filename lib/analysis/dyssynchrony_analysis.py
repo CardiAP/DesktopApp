@@ -53,7 +53,7 @@ def _calculate_tau(times, intensities):
 def _calculate_taus(intensities, max_peaks_positions, min_peaks_positions, calibration):
     taus = []
     times = np.asarray(range(0, len(intensities))) * calibration
-    for max_min in np.column_stack((max_peaks_positions[0:len(max_peaks_positions)-1], min_peaks_positions)):
+    for max_min in np.column_stack((max_peaks_positions, min_peaks_positions[1:len(min_peaks_positions)])):
         max_index = int(max_min[0])
         min_index = int(max_min[1])
 
@@ -67,7 +67,7 @@ def _calculate_taus(intensities, max_peaks_positions, min_peaks_positions, calib
 
 def _calculate_times_to_half_peaks(intensities, max_peaks_positions, min_peaks_positions):
     half_time_to_peaks = []
-    for max_min in np.column_stack((max_peaks_positions[1:len(max_peaks_positions)], min_peaks_positions)):
+    for max_min in np.column_stack((max_peaks_positions, min_peaks_positions[0:len(max_peaks_positions)])):
         max_index = int(max_min[0])
         min_index = int(max_min[1])
 
@@ -88,13 +88,13 @@ def _calculate_times_to_half_peaks(intensities, max_peaks_positions, min_peaks_p
 
 def _calculate_time_to_peaks(max_peaks_positions, min_peaks_positions):
     return [max_min[0] - max_min[1] for max_min in
-            np.column_stack((max_peaks_positions[1:len(max_peaks_positions)], min_peaks_positions,))]
+            np.column_stack((max_peaks_positions, min_peaks_positions[0:len(max_peaks_positions)],))]
 
 
 def _calculate_amplitudes(max_peaks_intensities, min_peaks_intensities):
     amplitudes = []
-    for i in range(0, len(min_peaks_intensities)):
-        amplitude = (max_peaks_intensities[i + 1] - min_peaks_intensities[i]) / min_peaks_intensities[i]
+    for i in range(0, len(max_peaks_intensities)):
+        amplitude = (max_peaks_intensities[i] - min_peaks_intensities[i]) / min_peaks_intensities[i]
         amplitudes.append(amplitude)
     return amplitudes
 
@@ -141,12 +141,16 @@ def _all_minimum_candidates(intensities, max_peaks_positions):
     all_minimum_candidates = []
     current_peak = max_peaks_positions[0]
     intensities_before_peak = intensities[0:current_peak]
-    all_minimum_candidates.append(_minimum_candidates(current_peak, intensities_before_peak))
+    all_minimum_candidates.append(_minimum_candidates(0, intensities_before_peak))
     for i in range(0, len(max_peaks_positions) - 1):
         current_peak = max_peaks_positions[i]
         next_peak = max_peaks_positions[i + 1]
         intensities_between_peaks = intensities[current_peak:next_peak]
         all_minimum_candidates.append(_minimum_candidates(current_peak, intensities_between_peaks))
+    current_peak = max_peaks_positions[len(max_peaks_positions)-1]
+    intensities_before_peak = intensities[current_peak:]
+    all_minimum_candidates.append(_minimum_candidates(current_peak, intensities_before_peak))
+    
     return all_minimum_candidates
 
 
