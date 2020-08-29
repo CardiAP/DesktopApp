@@ -13,7 +13,7 @@ def _max_peaks_positions(vector, min_dist_between_max_peaks):
     threshold = 5.0 / max(vector) if (max(vector) > 0) else 0
     possible_max_peaks = indexes(np.array(vector), thres=threshold, min_dist=min_dist_between_max_peaks)
     intensity_avg = sum(vector) / len(vector)
-    max_peaks = [max_peak for max_peak in possible_max_peaks if vector[max_peak] > intensity_avg/3]
+    max_peaks = [max_peak for max_peak in possible_max_peaks if vector[max_peak] > intensity_avg/4]
 
     if len(max_peaks) == 0: raise ValueError("Peaks not found")
 
