@@ -1,15 +1,17 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QIntValidator
 from PyQt5.QtWidgets import QWidget, QLabel, QFormLayout, QFrame, QLineEdit, QVBoxLayout, \
     QPushButton
 
 
 class DyssynchronyAnalysisForm(QWidget):
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout()
+    finished = pyqtSignal(dict)
 
-        # spacer = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+    def __init__(self, dyssynchrony_configuration):
+        super().__init__()
+
+        self._dyssynchrony_configuration = dyssynchrony_configuration
+        layout = QVBoxLayout()
 
         font = QFont()
         font.setPointSize(12)
@@ -35,24 +37,23 @@ class DyssynchronyAnalysisForm(QWidget):
 
     def form_submit(self):
         self._validate_form()
-        if not self._form_valid():
-            print("valid")
+        if self._form_valid():
+            form_data = {
+                "slice_width": int(self._slice_width_input.text()),
+                "min_dist_between_maxs": int(self._min_dist_input.text()),
+                "calibration": float(self._calibration_input.text())
+            }
+            self.finished.emit(form_data)
 
     def _form_valid(self):
         form_inputs = [
-            self._images_path_error.text(),
             self._min_dist_input.text(),
             self._calibration_input.text(),
             self._slice_width_input.text()
         ]
-        return len([value for value in form_inputs if value == ""]) > 0
+        return len([value for value in form_inputs if value == ""]) == 0
 
     def _validate_form(self):
-        if self._images_path_input.text() == "":
-            self._images_path_error.show()
-        else:
-            self._images_path_error.hide()
-
         if self._min_dist_input.text() == "":
             self._min_dist_error.show()
         else:
@@ -70,15 +71,6 @@ class DyssynchronyAnalysisForm(QWidget):
 
     def _set_up_form(self, widget):
         layout = QFormLayout(widget)
-
-        images_path_label = QLabel("Path where the images are", widget)
-        self._images_path_input = QLineEdit(widget)
-        self._images_path_error = QLabel("This field is required")
-        self._images_path_error.hide()
-
-        layout.setWidget(0, QFormLayout.LabelRole, images_path_label)
-        layout.setWidget(0, QFormLayout.FieldRole, self._images_path_input)
-        layout.setWidget(1, QFormLayout.LabelRole, self._images_path_error)
 
         min_dist_label = QLabel("Minimum distance between peaks", widget)
         self._min_dist_input = QLineEdit(widget)

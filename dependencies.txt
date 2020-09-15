@@ -6,3 +6,4 @@ https://pypi.org/project/PyQt5/
 https://pypi.org/project/PyQt5-stubs/
 https://pypi.org/project/jupyter/
 https://pypi.org/project/pyqt5-tools/
+https://pypi.org/project/pytest/
