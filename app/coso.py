@@ -106,7 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def load_image(self):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
-            None, "Select Image", "", "Image Files (*.png)"
+            None, "Select Image", "", "Image Files (*.tif)"
         )
         if fileName:
             pixmap = QtGui.QPixmap(fileName)
