@@ -79,8 +79,7 @@ def _calculate_tau(times, intensities):
         x_axis = np.asarray([[1, t] for t in times])
         y_axis = np.asarray([log(intensity) for intensity in intensities]).T
         (w, _, _, _) = lstsq(x_axis, y_axis, rcond=None)
-        tau = -1/w[1]
-        print (w)
+        tau = -1.0/w[1]
         return tau
 
 
