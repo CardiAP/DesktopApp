@@ -251,6 +251,9 @@ class ImageSettings(QWidget):
             if self._cropping_coordinates is None:
                 NeedToCropImage().exec()
             else:
+                if self._dyssynchrony_configuration.need_to_select_customization_strategy():
+                    self._set_customization_strategy()
+
                 self._dyssynchrony_configuration.settings_for_current_image({
                     "bright": self._brigth_value,
                     "contrast": self._contrast_value,
@@ -262,9 +265,6 @@ class ImageSettings(QWidget):
                     "min_dist_between_maxs": int(self._min_dist_input.text()),
                     "calibration": float(self._calibration_input.text())
                 })
-
-                if self._dyssynchrony_configuration.need_to_select_customization_strategy():
-                    self._set_customization_strategy()
 
                 if self._dyssynchrony_configuration.are_there_more_images():
                     self._open_next_image()
@@ -316,10 +316,10 @@ class ImageSettings(QWidget):
 
     def set_cropping_coordinates(self, position1, position2):
         self._cropping_coordinates = {
-            "x_start": min(position1.x(), position2.x()),
-            "y_start": min(position1.y(), position2.y()),
-            "x_end": max(position1.x(), position2.x()),
-            "y_end": max(position1.y(), position2.y())
+            "x_start": int(min(position1.x(), position2.x())),
+            "y_start": int(min(position1.y(), position2.y())),
+            "x_end": int(max(position1.x(), position2.x())),
+            "y_end": int(max(position1.y(), position2.y()))
         }
 
     def _get_image_path(self):

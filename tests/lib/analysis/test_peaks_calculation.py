@@ -3,7 +3,7 @@ from unittest import TestCase
 from lib.analysis.peaks_calculation import calculate_peaks
 
 
-class PeaksCalculationTest(TestCase):
+class TestPeaksCalculation(TestCase):
     def test_raise_error_when_no_max_peak_found(self):
         vector = [0, 0, 0, 0]
         min_dist_between_max_peaks = 2
@@ -31,16 +31,7 @@ class PeaksCalculationTest(TestCase):
         vector = [0, 0, 0, 0, 0, 0, 2]
         min_dist_between_max_peaks = 2
         self.assertRaises(ValueError, lambda: calculate_peaks(vector, min_dist_between_max_peaks))
-
-    def test_filter_max_peaks_bellow_avg(self):
-        vector = [0, 2, 0, 0, 1, 0, 0, 2, 0]
-        min_dist_between_max_peaks = 2
-        (max_peaks, _) = calculate_peaks(vector, min_dist_between_max_peaks)
-
-        self.assertEqual(len(max_peaks), 2)
-        self.assertEqual(max_peaks[0], 1)
-        self.assertEqual(max_peaks[1], 7)
-
+  
     def test_with_one_peaks_there_are_two_minimum_peaks(self):
         vector = [-1, 2, 3, 10, 9, 11, 6, 1, 3]
         min_dist_between_max_peaks = 2

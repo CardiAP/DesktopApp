@@ -7,6 +7,8 @@ from app.image_settings import ImageSettings
 from app.images_selection_form import ImagesSelectionForm
 from app.models.dyssynchrony_configuration import DyssynchronyConfiguration
 from app.welcome_view import WelcomeView
+from app.models.dyssynchrony_analysis_results import DyssynchronyAnalysisResults
+from app.dyssynchrony_analysis_results_refinement import DyssynchronyAnalysisResultsRefinement
 
 
 class MainWindow(QMainWindow):
@@ -17,7 +19,8 @@ class MainWindow(QMainWindow):
         self._setup_menu_bar()
         self._setup_layout()
         self.change_current_view_to(WelcomeView())
-        self._dyssynchrony_configuration = None
+        self._dyssynchrony_configuration = DyssynchronyConfiguration()
+        self._dyssynchrony_analysis_results = DyssynchronyAnalysisResults()
 
     def change_current_view_to(self, new_view):
         old_view = self._current_view
@@ -44,29 +47,29 @@ class MainWindow(QMainWindow):
         menu_analysis_selection.setTitle("Analysis Selection")
 
         action_dyssynchrony_analysis = QAction(self)
-        action_dyssynchrony_analysis.setObjectName(u"action_dyssynchrony_analysis")
+        action_dyssynchrony_analysis.setObjectName(
+            u"action_dyssynchrony_analysis")
         menu_analysis_selection.addAction(action_dyssynchrony_analysis)
 
-        action_dyssynchrony_analysis.triggered.connect(lambda _: self._go_to_image_selection())
+        action_dyssynchrony_analysis.triggered.connect(
+            lambda _: self._go_to_image_selection())
         action_dyssynchrony_analysis.setText(u"Dyssynchrony Analysis")
 
         self.setMenuBar(menu_bar)
 
     def _go_to_image_selection(self):
-        self._dyssynchrony_configuration = DyssynchronyConfiguration()
+        self._dyssynchrony_configuration.reset()
         image_selection = ImagesSelectionForm(self._dyssynchrony_configuration)
         image_selection.finished.connect(self._go_to_image_settings)
         self.change_current_view_to(image_selection)
 
     def _go_to_image_settings(self):
         image_settings = ImageSettings(self._dyssynchrony_configuration)
-        image_settings.finished.connect(lambda: self.change_current_view_to(WelcomeView()))
+        image_settings.finished.connect(
+            self._go_to_dyssynchrony_analysis_results)
         self.change_current_view_to(image_settings)
 
-    def _go_to_dyssynchrony_form(self):
-        dyssynchrony_analysis_form = DyssynchronyAnalysisForm(self._dyssynchrony_configuration)
-        dyssynchrony_analysis_form.finished.connect(lambda _: self._go_to_dyssynchrony_analysis_results())
-        self.change_current_view_to(dyssynchrony_analysis_form)
-
     def _go_to_dyssynchrony_analysis_results(self):
-        print("coso")
+        self._dyssynchrony_analysis_results.for_configuration(self._dyssynchrony_configuration)
+        results_refinement =  DyssynchronyAnalysisResultsRefinement(self._dyssynchrony_analysis_results)
+        self.change_current_view_to(results_refinement)

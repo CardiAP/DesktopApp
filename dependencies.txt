@@ -2,6 +2,7 @@ https://pypi.org/project/numpy/
 https://pypi.org/project/PeakUtils/
 https://pypi.org/project/opencv-python/
 https://pypi.org/project/PyQt5/
+https://pypi.org/project/matplotlib/
 
 https://pypi.org/project/PyQt5-stubs/
 https://pypi.org/project/jupyter/
