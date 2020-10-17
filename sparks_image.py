@@ -98,31 +98,31 @@ def automatic_brightness_and_contrast(image, clip_hist_percent=10):
     return (auto_result, alpha, beta)
 def image_process (image,path):
     if image is None:
-        print("Check file path")
+        print("Check file path")        
     else:
         r = select_roi (image) # Select ROI
         imCrop = crop_image (image, r)    # Crop image
         display_image ('Image' , imCrop)    # Display cropped image
         
-    auto_result, alpha, beta = automatic_brightness_and_contrast(imCrop)
-    cv2.imshow('auto_result', auto_result)
-    display_image ('Image.png' , imCrop)
-    filtered = filtration (auto_result, 2.5, 100)
-    dilate = filtered[0]
-    original = filtered[1]
+        auto_result, alpha, beta = automatic_brightness_and_contrast(imCrop)
+        cv2.imshow('auto_result', auto_result)
+        display_image ('Image.png' , imCrop)
+        filtered = filtration (auto_result, 2.5, 100)
+        dilate = filtered[0]
+        original = filtered[1]
 
-    cnts = find_contourns (dilate)    # Find contours
+        cnts = find_contourns (dilate)    # Find contours
 
-    # Iterate thorugh contours and filter for ROI
-    list_img_col = []
-    list_img_row = []
-    track_number = 0
-    for c in cnts:
-        img_mean = track_contours (c, auto_result, original, track_number)
-        img_col_mean = img_mean [0]
-        img_row_mean = img_mean [1]
-        track_number +=1
-        list_img_col.append (img_col_mean)
-        list_img_row.append (img_row_mean)
-    display_image ('image' , auto_result)
-    return list_img_col, list_img_row
+        # Iterate thorugh contours and filter for ROI
+        list_img_col = []
+        list_img_row = []
+        track_number = 0
+        for c in cnts:
+            img_mean = track_contours (c, auto_result, original, track_number)
+            img_col_mean = img_mean [0]
+            img_row_mean = img_mean [1]
+            track_number +=1
+            list_img_col.append (img_col_mean)
+            list_img_row.append (img_row_mean)
+        display_image ('image' , auto_result)
+        return list_img_col, list_img_row ,imCrop
