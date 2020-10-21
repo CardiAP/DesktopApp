@@ -14,5 +14,5 @@ class SelectedResultItem(QWidget):
         self._button.setIcon(self.style().standardIcon(getattr(QStyle, "SP_DialogDiscardButton")))
         self._button.clicked.connect(lambda: self.remove_clicked.emit(image_id))
         self._button.setToolTip("Remove this image from the selected results")
-        self.layout().addWidget(self._label, 0, 0)
-        self.layout().addWidget(self._button, 0, 1)
+        self.layout().addWidget(self._label, 0, 1)
+        self.layout().addWidget(self._button, 0, 2)

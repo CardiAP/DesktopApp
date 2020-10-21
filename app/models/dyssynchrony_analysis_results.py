@@ -3,15 +3,26 @@ from lib.image.image_data import apply_settings_to_image
 
 
 class DyssynchronyAnalysisResults(object):
+    VALID_DATA_POINTS = ['max_peaks', 'min_peaks', 'amplitudes', 'peak_time', 'half_peak_time', 'taus']
+
     def __init__(self):
         super(DyssynchronyAnalysisResults, self).__init__()
         self._results = {}
         self._settings = None
         self._selected_results = {}
+        self._selected_image_data_points = []
+        self._selected_slices_data_points = []
         self._observers = []
 
+    def set_selected_image_data_points(self, selected_data_points):
+        self._check_valid_data_points(selected_data_points)
+        self._selected_image_data_points = selected_data_points
+
+    def set_selected_slices_data_points(self, selected_data_points):
+        self._check_valid_data_points(selected_data_points)
+        self._selected_slices_data_points = selected_data_points
+
     def for_configuration(self, analysis_configuration):
-        self._results = {}
         self._settings = analysis_configuration.images_settings()
 
     def results_ids_and_names(self):
@@ -19,6 +30,13 @@ class DyssynchronyAnalysisResults(object):
 
     def selected_results_ids_and_names(self):
         return [(result_id, self._settings[result_id]['file'].split('/')[-1]) for result_id in self._selected_results]
+
+    def any_selected_result(self):
+        return len(self._selected_results) > 0
+
+    def select_all_results(self):
+        self.precalculate_all_results()
+        self._selected_results = self._results.copy()
 
     def result_for_id(self, result_id):
         if not (0 <= result_id < len(self._settings)):
@@ -64,5 +82,10 @@ class DyssynchronyAnalysisResults(object):
     def remove_observer(self, observer):
         try:
             self._observers.remove(observer)
-        except:
+        except ValueError:
             pass
+
+    def _check_valid_data_points(self, data_points):
+        for data_point in data_points:
+            if data_point not in self.VALID_DATA_POINTS:
+                raise ValueError(f"Invalid data point {data_point}")
