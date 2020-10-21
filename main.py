@@ -10,7 +10,7 @@ app = QApplication(sys.argv)
 view = MainWindow()
 view.showMaximized()
 
-app.exe()
+app.exec()
 
 if __name__ == "__main__":
-    app.exe()
+    app.exec()

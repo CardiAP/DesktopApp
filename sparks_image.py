@@ -30,7 +30,7 @@ def rotation (image_path, degrees):
 def filtration (image,factor, baseline):
     original = image.copy()
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (3, 3), 50)
+    blurred = cv2.GaussianBlur(gray, (3, 3), 0)
     canny = cv2.Canny(blurred, baseline, factor*baseline, 400)
     kernel = np.ones((5,5),np.uint8)
     dilate = cv2.dilate(canny, kernel, iterations=1)
