@@ -31,13 +31,13 @@ class DataPointsSelectionController(object):
         return len(self._get_selected_image_data_points()) > 0 and len(self._get_selected_slices_data_points()) > 0
 
     def _get_selected_slices_data_points(self):
-        return self._get_checked_checkbox_names(self._slices_checkboxes)
+        return self._get_checked_checkbox_ids(self._slices_checkboxes)
 
     def _get_selected_image_data_points(self):
-        return self._get_checked_checkbox_names(self._image_checkboxes)
+        return self._get_checked_checkbox_ids(self._image_checkboxes)
 
-    def _get_checked_checkbox_names(self, checkboxes):
-        return [name for name in checkboxes if checkboxes[name].isChecked()]
+    def _get_checked_checkbox_ids(self, checkboxes):
+        return [checkboxes[name].data_point_id for name in checkboxes if checkboxes[name].isChecked()]
 
     def _build_data_points_selection_widget(self, title, checkboxes):
         widget = QWidget()
@@ -59,10 +59,18 @@ class DataPointsSelectionController(object):
 
     def _build_checkboxes(self):
         return {
-            'max_peaks': QCheckBox('Max peaks'),
-            'min_peaks': QCheckBox('Min peaks'),
-            'amplitudes': QCheckBox('Amplitudes'),
-            'peak_time': QCheckBox('Peak times'),
-            'half_peak_time': QCheckBox('Half peak times'),
-            'taus': QCheckBox('Taus')
+            'max_peaks_positions': self._build_checkbox('Max peaks position', 'max_peaks_positions'),
+            'max_peaks_intensities': self._build_checkbox('Max peaks intensities', 'max_peaks_intensities'),
+            'min_peaks_positions': self._build_checkbox('Min peaks positions', 'min_peaks_positions'),
+            'min_peaks_intensities': self._build_checkbox('Min peaks intensities', 'min_peaks_intensities'),
+            'amplitudes': self._build_checkbox('Amplitudes', 'amplitudes'),
+            'peak_time': self._build_checkbox('Peak times', 'times_to_peaks'),
+            'half_peak_time': self._build_checkbox('Half peak times', 'times_to_half_peaks'),
+            'taus': self._build_checkbox('Taus', 'tau_s')
         }
+
+    def _build_checkbox(self, name, id):
+        checkbox = QCheckBox()
+        checkbox.setText(name)
+        checkbox.data_point_id = id
+        return checkbox

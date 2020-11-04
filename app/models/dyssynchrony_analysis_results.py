@@ -3,7 +3,16 @@ from lib.image.image_data import apply_settings_to_image
 
 
 class DyssynchronyAnalysisResults(object):
-    VALID_DATA_POINTS = ['max_peaks', 'min_peaks', 'amplitudes', 'peak_time', 'half_peak_time', 'taus']
+    VALID_DATA_POINTS = {
+        'max_peaks_positions': 'Max peaks positions',
+        'max_peaks_intensities': 'Max peaks intensities',
+        'min_peaks_positions': 'Min peaks positions',
+        'min_peaks_intensities': 'Min peaks intensities',
+        'amplitudes': 'Amplitudes',
+        'times_to_peaks': 'Time to peak',
+        'times_to_half_peaks': 'Time to half peak',
+        'tau_s': 'Tau'
+    }
 
     def __init__(self):
         super(DyssynchronyAnalysisResults, self).__init__()
@@ -13,6 +22,37 @@ class DyssynchronyAnalysisResults(object):
         self._selected_image_data_points = []
         self._selected_slices_data_points = []
         self._observers = []
+
+    def image_data_points(self):
+        return self._selected_image_data_points
+
+    def image_data_points_data_for_selected_result(self, selected_result_id, with_humanized_data_points=False):
+        self._check_existent_selected_result_id(selected_result_id)
+        image_data_result = self._selected_results[selected_result_id]['image']
+        results_for_data_points = {}
+        for data_point in self._selected_image_data_points:
+            if with_humanized_data_points:
+                results_for_data_points[self.VALID_DATA_POINTS[data_point]] = image_data_result[data_point]
+            else:
+                results_for_data_points[data_point] = image_data_result[data_point]
+        return results_for_data_points
+
+    def slices_data_points_data_for_selected_result(self, selected_result_id, with_humanized_data_points=False):
+        self._check_existent_selected_result_id(selected_result_id)
+        slices = self._selected_results[selected_result_id]['slices']
+        slices_results_for_data_points = []
+        for slice in slices:
+            results_for_data_points = {}
+            for data_point in self._selected_slices_data_points:
+                if with_humanized_data_points:
+                    results_for_data_points[self.VALID_DATA_POINTS[data_point]] = slice[data_point]
+                else:
+                    results_for_data_points[data_point] = slice[data_point]
+            slices_results_for_data_points.append(results_for_data_points)
+        return slices_results_for_data_points
+
+    def slices_data_points(self):
+        return self._selected_slices_data_points
 
     def set_selected_image_data_points(self, selected_data_points):
         self._check_valid_data_points(selected_data_points)
@@ -87,5 +127,16 @@ class DyssynchronyAnalysisResults(object):
 
     def _check_valid_data_points(self, data_points):
         for data_point in data_points:
-            if data_point not in self.VALID_DATA_POINTS:
-                raise ValueError(f"Invalid data point {data_point}")
+            self._check_valid_data_point(data_point)
+
+    def _check_valid_data_point(self, data_point):
+        if data_point not in self.VALID_DATA_POINTS:
+            raise ValueError(f"Invalid data point {data_point}")
+
+    def data_point_human_name(self, data_point):
+        self._check_valid_data_points(data_point)
+        return self.VALID_DATA_POINTS[data_point]
+
+    def _check_existent_selected_result_id(self, selected_result_id):
+        if selected_result_id not in self._selected_results:
+            raise ValueError(f"Id {selected_result_id} not found in selected results")

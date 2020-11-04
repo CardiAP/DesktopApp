@@ -4,7 +4,9 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QAction, \
 
 from app.analysis_results_refinement import AnalysisResultsRefinement
 from app.controllers.analysis_results_refinment_controller import AnalysisResultsRefinementController
+from app.controllers.data_export_controller import DataExportController
 from app.controllers.data_points_selection_controller import DataPointsSelectionController
+from app.data_export import DataExport
 from app.data_points_selection import DataPointsSelection
 from app.image_settings import ImageSettings
 from app.images_selection_form import ImagesSelectionForm
@@ -80,4 +82,10 @@ class MainWindow(QMainWindow):
     def _go_to_data_selection(self):
         data_selection = DataPointsSelection()
         DataPointsSelectionController(self._dyssynchrony_analysis_results, data_selection)
+        data_selection.finished.connect(self._go_to_data_export)
         self._change_current_view_to(data_selection)
+
+    def _go_to_data_export(self):
+        data_export = DataExport()
+        DataExportController(self._dyssynchrony_analysis_results, data_export)
+        self._change_current_view_to(data_export)
