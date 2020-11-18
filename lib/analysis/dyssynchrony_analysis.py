@@ -37,7 +37,7 @@ def _analyze_matrix(matrix, min_dist_between_max_peaks, calibration):
 
 
 def _mean_columns(slice):
-    return np.asarray([np.mean(row) for row in slice])
+    return np.asarray([float(np.mean(row)) for row in slice])
 
 
 def _intensities_in_positions(intensities, positions):
