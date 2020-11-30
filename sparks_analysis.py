@@ -191,7 +191,7 @@ def width (list_img_row):
     full_width = out_sparks_row['tiempo_valle'] - out_sparks_row['tiempo_minimo']
     return full_width, sparks_tiempo_pico50, sparks_tiempo_pico50_2
 
-def analysis_process (list_img_col, list_img_row):
+def analysis_process (list_img_col, list_img_row,x,y,w,h):
     if list_img_col and list_img_row:
         maxim = maximo_spark(list_img_col)
         cantidad_sparks = maxim[0]
@@ -233,6 +233,10 @@ def analysis_process (list_img_col, list_img_row):
         sparks_tiempo_pico50_2 = width (list_img_row)[2]
         out_sparks['fullWidth'] = full_width
         out_sparks['FWHM'] =[A - B for (A, B) in zip(sparks_tiempo_pico50_2, sparks_tiempo_pico50)]
+        out_sparks['pos_x'] = x
+        out_sparks['pos_y'] = y
+        out_sparks['width'] = w
+        out_sparks['high'] = h
         return out_sparks
     else:
         print ('not possible analysis')
