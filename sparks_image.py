@@ -8,6 +8,31 @@ def select_roi (image):
     showCrosshair = False
     r = cv2.selectROI(image, fromCenter, showCrosshair)
     return r
+
+
+# Define the function to be called on mouse click
+def write_points(event, x, y, flags, param):
+    global img_points
+    if event == cv2.EVENT_LBUTTONDOWN and flags != cv2.EVENT_FLAG_SHIFTKEY:
+        img_points.append((x,y,flags))
+        print (img_points)
+    if event == cv2.EVENT_RBUTTONDOWN and flags != cv2.EVENT_FLAG_SHIFTKEY:
+        img_points.append((x,y,flags))
+        print (img_points)
+    elif event == cv2.EVENT_LBUTTONDOWN and flags == cv2.EVENT_FLAG_SHIFTKEY:
+        img_points.append(('NA','NA'))
+        print (img_points)
+
+def paint_canvas(image):
+    winname="TAG :: Press ESC to exit; left Click to TAG 1; right Click to TAG 2"
+    cv2.namedWindow(winname)
+    cv2.setMouseCallback(winname,write_points)
+    while(1):
+        cv2.imshow(winname,image)
+        if cv2.waitKey(20) & 0xFF ==27:
+            break
+    cv2.destroyAllWindows()
+    
 def crop_image (image, r):
     imCrop = image[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
     return imCrop
@@ -97,7 +122,7 @@ def automatic_brightness_and_contrast(image, clip_hist_percent=10):
     new_hist = cv2.calcHist([gray],[0],None,[256],[minimum_gray,maximum_gray])
     auto_result = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
     return (auto_result, alpha, beta)
-def image_process (image,path,clip_hist_percent=10):
+def image_process (image,img_points,clip_hist_percent=10):
     if image is None:
         print("Check file path")        
     else:
@@ -134,4 +159,5 @@ def image_process (image,path,clip_hist_percent=10):
             list_img_col.append (img_col_mean)
             list_img_row.append (img_row_mean)
         display_image ('image' , auto_result)
+        paint_canvas(image)
         return list_img_col, list_img_row,x, y, w, h
