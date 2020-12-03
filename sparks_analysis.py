@@ -237,6 +237,7 @@ def analysis_process (list_img_col, list_img_row,x,y,w,h):
         out_sparks['pos_y'] = y
         out_sparks['width'] = w
         out_sparks['high'] = h
+#         out_sparks['flags'] = img_points
         return out_sparks
     else:
         print ('not possible analysis')
