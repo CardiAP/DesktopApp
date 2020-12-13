@@ -12,26 +12,29 @@ def select_roi (image):
 
 # Define the function to be called on mouse click
 def write_points(event, x, y, flags, param):
-    global img_points
+#     global img_points
     img_points = []
     if event == cv2.EVENT_LBUTTONDOWN and flags != cv2.EVENT_FLAG_SHIFTKEY:
-        img_points.append((x,y,flags))
+        img_points.append((x, y, flags))
     if event == cv2.EVENT_RBUTTONDOWN and flags != cv2.EVENT_FLAG_SHIFTKEY:
-        img_points.append((x,y,flags))
+        img_points.append((x, y, flags))    
     elif event == cv2.EVENT_LBUTTONDOWN and flags == cv2.EVENT_FLAG_SHIFTKEY:
-        img_points.append(('NA','NA'))
+        img_points.append(('NA', 'NA', 'NA'))
+    print(img_points)
     return img_points
 
-def paint_canvas(image):
+def paint_canvas(image, point):
+    point = []
     winname="TAG :: Press ESC to exit; left Click to TAG 1; right Click to TAG 2"
     cv2.namedWindow(winname)
-    cv2.setMouseCallback(winname,write_points)
+    point = cv2.setMouseCallback(winname,write_points)
     while(1):
         cv2.imshow(winname,image)
         if cv2.waitKey(20) & 0xFF ==27:
-            break
+            break         
     cv2.destroyAllWindows()
-    return img_points
+    return point
+
     
 def crop_image (image, r):
     imCrop = image[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
@@ -58,8 +61,7 @@ def filtration (image,factor, baseline):
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
     canny = cv2.Canny(blurred, baseline, factor*baseline, 400)
     kernel = np.ones((5,5),np.uint8)
-    dilate = cv2.morphologyEx(canny, cv2.MORPH_CLOSE, kernel)
-#     dilate = cv2.dilate(canny, kernel, iterations=1)
+    dilate = cv2.dilate(canny, kernel, iterations=1)
     return dilate, original
 def find_contourns (image):
     cnts = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -122,8 +124,8 @@ def automatic_brightness_and_contrast(image, clip_hist_percent=10):
     new_hist = cv2.calcHist([gray],[0],None,[256],[minimum_gray,maximum_gray])
     auto_result = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
     return (auto_result, alpha, beta)
-def image_process (image,clip_hist_percent=10):
-    img_points = []
+def image_process (image,image_points, clip_hist_percent=10):
+    image_points = []
     if image is None:
         print("Check file path")        
     else:
@@ -159,7 +161,7 @@ def image_process (image,clip_hist_percent=10):
             track_number +=1
             list_img_col.append (img_col_mean)
             list_img_row.append (img_row_mean)
-        img_points.append(paint_canvas(auto_result))
+        image_points.append(paint_canvas(auto_result,image_points))
     
-        return list_img_col, list_img_row,x, y, w, h,img_points
+    return list_img_col, list_img_row,x, y, w, h,image_points
     
