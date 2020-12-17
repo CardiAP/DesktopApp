@@ -1,15 +1,8 @@
 import cv2
 import numpy as np
-# import matplotlib.pyplot as plt
 from PIL import Image
 
-def select_roi (image):
-    fromCenter = False
-    showCrosshair = False
-    r = cv2.selectROI(image, fromCenter, showCrosshair)
-    return r
-
-
+        
 # Define the function to be called on mouse click
 def write_points(event, x, y, flags, param):
 #     global img_points
@@ -23,8 +16,7 @@ def write_points(event, x, y, flags, param):
     print(img_points)
     return img_points
 
-def paint_canvas(image, point):
-    point = []
+def paint_canvas():
     winname="TAG :: Press ESC to exit; left Click to TAG 1; right Click to TAG 2"
     cv2.namedWindow(winname)
     point = cv2.setMouseCallback(winname,write_points)
@@ -33,16 +25,22 @@ def paint_canvas(image, point):
         if cv2.waitKey(20) & 0xFF ==27:
             break         
     cv2.destroyAllWindows()
-    return point
 
-    
+def select_roi (image):
+    fromCenter = False
+    showCrosshair = False
+    r = cv2.selectROI(image, fromCenter, showCrosshair)
+    return r      
+
 def crop_image (image, r):
     imCrop = image[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
     return imCrop
+
 def display_image (name , image):
     cv2.imshow(name, image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
 def f(brightness, contrast):
     img = np.int16(imCrop)
     img = img * (contrast/127+1) - contrast + brightness
@@ -51,10 +49,12 @@ def f(brightness, contrast):
     plt.imshow(img)
     plt.show()
     return img
+
 def rotation (image_path, degrees):
     im = Image.fromarray(image_path)
     im = im.rotate(degrees)
     im = numpy.array(im)
+
 def filtration (image,factor, baseline):
     original = image.copy()
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -63,16 +63,12 @@ def filtration (image,factor, baseline):
     kernel = np.ones((5,5),np.uint8)
     dilate = cv2.dilate(canny, kernel, iterations=1)
     return dilate, original
+
 def find_contourns (image):
     cnts = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
     return cnts
-# def plot_histogram (y_data, nombre_foto, label_x, label_y):
-#     plt.plot(y_data)
-#     plt.title(nombre_foto)
-#     plt.xlabel(label_x)
-#     plt.ylabel(label_y)
-#     plt.show()
+
 def track_contours (c, image, original, track_number):
     x,y,w,h = cv2.boundingRect(c)
     cv2.rectangle(image, (x, y), (x + w, y + h), (255,255,0), 2)
@@ -86,6 +82,7 @@ def track_contours (c, image, original, track_number):
     img_col_mean = [x.mean() for x in img_col_mean]
     img_row_mean = [x.mean() for x in img_row_mean]
     return img_row_mean , img_col_mean, x, y, w, h
+
 # Automatic brightness and contrast optimization with optional histogram clipping
 def automatic_brightness_and_contrast(image, clip_hist_percent=10):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -132,7 +129,7 @@ def image_process (image,image_points, clip_hist_percent=10):
         r = select_roi (image) # Select ROI
         imCrop = crop_image (image, r)    # Crop image
         display_image ('Image' , imCrop)    # Display cropped image
-        
+
         auto_result, alpha, beta = automatic_brightness_and_contrast(imCrop,clip_hist_percent)
         cv2.imshow('auto_result', auto_result)
         display_image ('Image.png' , imCrop)
@@ -162,6 +159,6 @@ def image_process (image,image_points, clip_hist_percent=10):
             list_img_col.append (img_col_mean)
             list_img_row.append (img_row_mean)
         image_points.append(paint_canvas(auto_result,image_points))
-    
+
     return list_img_col, list_img_row,x, y, w, h,image_points
-    
+
