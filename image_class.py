@@ -5,11 +5,8 @@ from PIL import Image
 
 class image_processing:
     
-    def __init__(self, name, path, size, array):
-        self.name = name
-        self.path = path
-        self.size = size
-        self.array = array
+    def __init__(self, dimension):
+        self.shape = dimension
         
     def select_roi (self):
         fromCenter = False
@@ -21,8 +18,8 @@ class image_processing:
         imCrop = self[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
         return imCrop
 
-    def display_image (self, self.name):
-        cv2.imshow(self.name, self)
+    def display_image (name,self):
+        cv2.imshow(name, self)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
@@ -129,44 +126,3 @@ class image_processing:
             if cv2.waitKey(20) & 0xFF ==27:
                 break         
         cv2.destroyAllWindows()
-        
-    def image_process (image,image_points, clip_hist_percent=10):
-        image_points = []
-        if image is None:
-            print("Check file path")        
-        else:
-            r = select_roi (image) # Select ROI
-            imCrop = crop_image (image, r)    # Crop image
-            display_image ('Image' , imCrop)    # Display cropped image
-
-            auto_result, alpha, beta = automatic_brightness_and_contrast(imCrop,clip_hist_percent)
-            cv2.imshow('auto_result', auto_result)
-            display_image ('Image.png' , imCrop)
-            filtered = filtration (auto_result, 2.5, 100)
-            dilate = filtered[0]
-            original = filtered[1]
-
-            cnts = find_contourns (dilate)    # Find contours
-
-            # Iterate thorugh contours and filter for ROI
-            list_img_col = []
-            list_img_row = []
-            track_number = 0
-            x = []
-            y = []
-            w = []
-            h = []
-            for c in cnts:
-                img_mean = track_contours (c, auto_result, original, track_number)
-                img_col_mean = img_mean [0]
-                img_row_mean = img_mean [1]
-                x.append(img_mean [2])
-                y.append(img_mean [3])
-                w.append(img_mean [4])
-                h.append(img_mean [5])
-                track_number +=1
-                list_img_col.append (img_col_mean)
-                list_img_row.append (img_row_mean)
-            image_points.append(paint_canvas(auto_result,image_points))
-
-        return list_img_col, list_img_row,x, y, w, h,image_points
