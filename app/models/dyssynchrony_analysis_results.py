@@ -68,6 +68,9 @@ class DyssynchronyAnalysisResults(object):
     def for_configuration(self, analysis_configuration):
         self._settings = analysis_configuration.images_settings()
 
+    def settings(self):
+        return self._settings
+
     def selected_results_names(self):
         return [ name for (result_id, name) in self.selected_results_ids_and_names()]
 

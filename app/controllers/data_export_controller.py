@@ -78,5 +78,7 @@ class DataExportController(object):
             if format is self.CSV_FORMAT:
                 exporter.save_csv()
 
+            exporter.save_settings(self._results.settings())
+
     def _show_export_settings(self):
         self._view.complete_export_settings()

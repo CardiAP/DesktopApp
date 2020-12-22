@@ -54,6 +54,9 @@ class DataExporter(object):
         self._save_file('analysis_results.json',
                         json.dumps(data, cls=NumpyEncoder))
 
+    def save_settings(self, settings):
+        self._save_file('used_settings.json', json.dumps(settings))
+
     def _save_file(self, file_name, data):
         with open(self._directory / file_name, "w") as file_handle:
             file_handle.write(data)
