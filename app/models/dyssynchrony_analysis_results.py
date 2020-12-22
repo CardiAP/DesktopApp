@@ -1,3 +1,6 @@
+import pandas
+import numpy as np
+
 from lib.analysis.dyssynchrony_analysis import analyze_image
 from lib.image.image_data import apply_settings_to_image
 
@@ -65,11 +68,14 @@ class DyssynchronyAnalysisResults(object):
     def for_configuration(self, analysis_configuration):
         self._settings = analysis_configuration.images_settings()
 
+    def selected_results_names(self):
+        return [ name for (result_id, name) in self.selected_results_ids_and_names()]
+
     def results_ids_and_names(self):
         return [(index, settings['file'].split('/')[-1]) for index, settings in enumerate(self._settings)]
 
     def selected_results_ids_and_names(self):
-        return [(result_id, self._settings[result_id]['file'].split('/')[-1]) for result_id in self._selected_results]
+        return [(result_id, self._settings[result_id]['file'].split('/')[-1].split('.')[0]) for result_id in self._selected_results]
 
     def any_selected_result(self):
         return len(self._selected_results) > 0

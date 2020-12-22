@@ -3,8 +3,9 @@ cvvenv
 .ipynb_checkpoints
 __pycache__/
 .idea
-
+.spyproject/
 .pytest_cache
 .#*
 #*
 */**/#*#
+.vscode
