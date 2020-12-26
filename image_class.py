@@ -103,26 +103,3 @@ class image_processing:
         new_hist = cv2.calcHist([gray],[0],None,[256],[minimum_gray,maximum_gray])
         auto_result = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
         return (auto_result, alpha, beta)
-    
-    # Define the function to be called on mouse click
-    def write_points(event, x, y, flags, param):
-    #     global img_points
-        img_points = []
-        if event == cv2.EVENT_LBUTTONDOWN and flags != cv2.EVENT_FLAG_SHIFTKEY:
-            img_points.append((x, y, flags))
-        if event == cv2.EVENT_RBUTTONDOWN and flags != cv2.EVENT_FLAG_SHIFTKEY:
-            img_points.append((x, y, flags))    
-        elif event == cv2.EVENT_LBUTTONDOWN and flags == cv2.EVENT_FLAG_SHIFTKEY:
-            img_points.append(('NA', 'NA', 'NA'))
-        print(img_points)
-        return img_points
-
-    def paint_canvas():
-        winname="TAG :: Press ESC to exit; left Click to TAG 1; right Click to TAG 2"
-        cv2.namedWindow(winname)
-        point = cv2.setMouseCallback(winname,write_points)
-        while(1):
-            cv2.imshow(winname,image)
-            if cv2.waitKey(20) & 0xFF ==27:
-                break         
-        cv2.destroyAllWindows()
