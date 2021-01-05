@@ -1,24 +1,24 @@
 import prueba_image_spark
 
-path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
-# path = 'C:/Users/Leand/OneDrive/Documentos/Lean/Analizador_imagenes_calcio/Imagenes_confocal/Rata/C071112/'
+# path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
+path = 'C:/Users/Leand/OneDrive/Documentos/Lean/Analizador_imagenes_calcio/Imagenes_confocal/Rata/C071112/'
 photo_name = '2arf001'
 
-image = prueba_image_spark.read_image(path, photo_name)
-imcrop = prueba_image_spark.Crop(image)
-cnts = prueba_image_spark.process(image)[0]
-img_processed = prueba_image_spark.process(image)[0]
-original = prueba_image_spark.process(image)[0]
-img_data = prueba_image_spark.analysis(cnts, img_processed, original)
+image = prueba_image_spark.Read_image(path, photo_name)
+imcrop = prueba_image_spark.Image_cropping(image)
+contours = prueba_image_spark.Image_processing(imcrop)
+img_processed = prueba_image_spark.Image_processing(contours)
+original = prueba_image_spark.Image_processing(img_processed)
+img_data = prueba_image_spark.Image_analysis(contours, img_processed, original)
 
 list_img_col = img_data[0]
 list_img_row = img_data[1]
-x = img_data[2]
-y = img_data[3]
+x_position = img_data[2]
+y_position = img_data[3]
 width = img_data[4]
 high = img_data[5]
 # Detect each event and give it a category
-def write_points(event, x, y, flags, param):
+def write_points(event, x_position, y_position, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         img_points.append(flags)
     if event == cv2.EVENT_RBUTTONDOWN:

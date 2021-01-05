@@ -3,36 +3,40 @@ import image_class
 import sparks_analysis
 import numpy as np
 
-def read_image(path, photo_name):
-    image = cv2.imread(path + photo_name + ".tif")    # Read image
+def Read_image(path, photo_name):
+    '''Reads an image using path and the file name as numpy.ndarray'''
+    image = cv2.imread(path + photo_name + ".tif")
     return image
 
-def Crop(image):
+def Image_cropping(image):
+    '''Uses numpy type image for selecting and cropping'''
     image_class.image_processing.__init__(image, image.shape)
-    r = image_class.image_processing.select_roi(image)  # Select ROI
-    imcrop = image_class.image_processing.crop_image(image,r)   # Crop ROI
+    r = image_class.image_processing.select_roi(image)
+    imcrop = image_class.image_processing.crop_image(image,r)
     return imcrop
 
-def process(image):
-    img_processed, alpha, beta = image_class.image_processing.automatic_brightness_and_contrast(image) # Autoprocess brightness and contrast
-    image_class.image_processing.display_image('crop',img_processed) # Show cropped processed image
-    filtered = image_class.image_processing.filtration (img_processed, 3, 100) # Filtering
+def Image_processing(image):
+    '''Uses numpy type image and returns a copy of the image and a filtered image'''
+    img_processed, alpha, beta = image_class.image_processing.automatic_brightness_and_contrast(image)
+    image_class.image_processing.display_image('crop',img_processed)
+    filtered = image_class.image_processing.image_filtration (img_processed, 3, 100)
     dilate = filtered[0]
     original = filtered[1]
-    cnts = image_class.image_processing.find_contourns(dilate) # Obtain elements by contours
-    return cnts, img_processed, original
+    contours = image_class.image_processing.find_contourns(dilate) # Obtains elements by contours
+    return contours, img_processed, original
 
-# Iterate thorugh contours and filter for ROI
-def analysis(cnts, img_processed, original):
+def Image_analysis(contours, img_processed, original):
+    '''Iterates through contours and filter for ROI, and returns the dimension of elements contours 
+    and converts narray to list of averages'''
     list_img_col = []
     list_img_row = []
     track_number = 0
-    x = []
-    y = []
+    x_position = []
+    y_position = []
     width = []
     high = []
-    for c in cnts:
-        img_mean = image_class.image_processing.track_contours (c, img_processed, original, track_number)
+    for element in contours:
+        img_mean = image_class.image_processing.track_contours (element, img_processed, original, track_number)
         img_col_mean = img_mean [0]
         img_row_mean = img_mean [1]
         x.append(img_mean [2])
@@ -42,4 +46,4 @@ def analysis(cnts, img_processed, original):
         track_number +=1
         list_img_col.append (img_col_mean)
         list_img_row.append (img_row_mean)
-    return list_img_col, list_img_row, x, y, width, high
+    return list_img_col, list_img_row, x_position, y_position, width, high

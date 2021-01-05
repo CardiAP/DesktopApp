@@ -40,9 +40,9 @@ class image_processing:
 
     def image_rotation (self, degrees):
         '''Rotates an image and returns an image with the same dimensions'''
-        im = Image.fromarray(self)
-        im = im.rotate(degrees)
-        im = numpy.array(im)
+        imagen = Image.fromarray(self)
+        imagen = imagen.rotate(degrees)
+        imagen = numpy.array(imagen)
 
     def image_filtration (image,factor, baseline):
         '''Gaussian filtration using baseline and a proportionality factor. This function returns a filtered image'''
