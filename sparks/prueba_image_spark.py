@@ -18,12 +18,10 @@ def Image_cropping(image):
 def Image_processing(image):
     '''Uses numpy type image and returns a copy of the image and a filtered image'''
     img_processed, alpha, beta = image_class.image_processing.automatic_brightness_and_contrast(image)
-    image_class.image_processing.display_image('crop',img_processed)
+    image_class.image_processing.display_image('Image processed',img_processed)
     filtered = image_class.image_processing.image_filtration (img_processed, 3, 100)
-    dilate = filtered[0]
-    original = filtered[1]
-    contours = image_class.image_processing.find_contourns(dilate) # Obtains elements by contours
-    return contours, img_processed, original
+    contours = image_class.image_processing.find_contourns(filtered) # Obtains elements by contours
+    return contours, img_processed
 
 def Image_analysis(contours, img_processed, original):
     '''Iterates through contours and filter for ROI, and returns the dimension of elements contours 
@@ -37,13 +35,12 @@ def Image_analysis(contours, img_processed, original):
     high = []
     for element in contours:
         img_mean = image_class.image_processing.track_contours (element, img_processed, original, track_number)
-        img_col_mean = img_mean [0]
-        img_row_mean = img_mean [1]
-        x.append(img_mean [2])
-        y.append(img_mean [3])
-        width.append(img_mean [4])
-        high.append(img_mean [5])
+        img_row_mean , img_col_mean = image_class.image_processing.mean_pixels_intensity (element)
+        list_img_col.append(img_row_mean)
+        list_img_row.append(img_col_mean)
+        x_position.append(img_mean [0])
+        y_position.append(img_mean [1])
+        width.append(img_mean [2])
+        high.append(img_mean [3])
         track_number +=1
-        list_img_col.append (img_col_mean)
-        list_img_row.append (img_row_mean)
     return list_img_col, list_img_row, x_position, y_position, width, high

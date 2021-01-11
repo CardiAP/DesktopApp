@@ -4,13 +4,12 @@ import sparks_analysis
 
 path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
 # path = 'C:/Users/Leand/OneDrive/Documentos/Lean/Analizador_imagenes_calcio/Imagenes_confocal/Rata/C071112/'
-photo_name = '2arf001'
+photo_name = '3arc008'
 
 image = prueba_image_spark.Read_image(path, photo_name)
 imcrop = prueba_image_spark.Image_cropping(image)
-contours, img_processed, original = prueba_image_spark.Image_processing(imcrop)
-list_img_col, list_img_row, x_position, y_position, width, high = prueba_image_spark.Image_analysis(contours, img_processed, original)
-
+contours, img_processed = prueba_image_spark.Image_processing(imcrop)
+list_img_col, list_img_row, x_position, y_position, width, high = prueba_image_spark.Image_analysis(contours, img_processed, image)
 
 # Detect each event and give it a category
 def write_points(event, x_position, y_position, flags, param):

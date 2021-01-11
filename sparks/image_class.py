@@ -44,19 +44,19 @@ class image_processing:
         imagen = imagen.rotate(degrees)
         imagen = numpy.array(imagen)
 
-    def image_filtration (image,factor, baseline):
+    def image_filtration (self,factor, baseline):
         '''Gaussian filtration using baseline and a proportionality factor. This function returns a filtered image'''
-        image_grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image_grayscale = cv2.cvtColor(self, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(image_grayscale, (3, 3), 0)
         canny = cv2.Canny(blurred, baseline, factor*baseline, 400)  # edge detection algorithm
         kernel = np.ones((5,5),np.uint8)
         dilate = cv2.dilate(canny, kernel, iterations=1)  # it increases the white region in the image or size of foreground object increases
         return dilate
 
-    def find_contourns (image):
+    def find_contourns (self):
         '''Obtain elements of an image returning a list of each individual contour.
         They are Numpy arrays of (x,y) coordinates of boundary points of the object.'''
-        countours = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        countours = cv2.findContours(self, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         countours = countours[0] if len(countours) == 2 else countours[1]
         return countours
 
