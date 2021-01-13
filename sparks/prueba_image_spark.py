@@ -35,9 +35,9 @@ def Image_analysis(contours, img_processed, original):
     high = []
     for element in contours:
         img_mean = image_class.image_processing.track_contours (element, img_processed, original, track_number)
-        img_row_mean , img_col_mean = image_class.image_processing.mean_pixels_intensity (element)
-        list_img_col.append(img_row_mean)
-        list_img_row.append(img_col_mean)
+        img_row_mean , img_col_mean = image_class.image_processing.mean_pixels_intensity (img_mean[4])
+        list_img_row.append(img_row_mean)
+        list_img_col.append(img_col_mean)
         x_position.append(img_mean [0])
         y_position.append(img_mean [1])
         width.append(img_mean [2])

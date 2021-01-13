@@ -4,7 +4,7 @@ import sparks_analysis
 
 path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
 # path = 'C:/Users/Leand/OneDrive/Documentos/Lean/Analizador_imagenes_calcio/Imagenes_confocal/Rata/C071112/'
-photo_name = '3arc008'
+photo_name = '3arf006'
 
 image = prueba_image_spark.Read_image(path, photo_name)
 imcrop = prueba_image_spark.Image_cropping(image)
@@ -30,6 +30,6 @@ cv2.destroyAllWindows()
 
 # Take the processing data to analyze each spark and extract parameters
 
-parameters = sparks_analysis.analysis_process (list_img_col, list_img_row,x_position,y_position,width,high)
+parameters = sparks_analysis.analysis_process (list_img_col, list_img_row,x_position,y_position,width,high, img_points)
 print(parameters)
-#parameters.to_csv()
+#parameters.to_csv(path + photo_name)
