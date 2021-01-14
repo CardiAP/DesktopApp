@@ -5,12 +5,10 @@ from PyQt5.QtWidgets import QWidget, QLabel, QFormLayout, QFrame, QLineEdit, QVB
 
 
 class ImagesSelectionForm(QWidget):
-    finished = pyqtSignal()
+    form_submitted = pyqtSignal(str)
 
-    def __init__(self, dyssynchrony_configuration):
+    def __init__(self, path):
         super().__init__()
-        self._dyssynchrony_configuration = dyssynchrony_configuration
-
         layout = QVBoxLayout()
 
         font = QFont()
@@ -27,7 +25,7 @@ class ImagesSelectionForm(QWidget):
         layout.addWidget(line)
 
         form_widget = QWidget(self)
-        self._set_up_form(form_widget)
+        self._set_up_form(form_widget, path)
         layout.addWidget(form_widget)
 
         button = QPushButton("Continue", self)
@@ -39,9 +37,7 @@ class ImagesSelectionForm(QWidget):
     def _form_submit(self):
         self._validate_form()
         if self._is_form_valid():
-            image_path = self._images_path_input.text()
-            self._dyssynchrony_configuration.set_image_path(image_path)
-            self.finished.emit()
+            self.form_submitted.emit(self._images_path_input.text())
 
     def _is_form_valid(self):
         return self._images_path_input.text() != ""
@@ -52,12 +48,12 @@ class ImagesSelectionForm(QWidget):
         else:
             self._images_path_error.hide()
 
-    def _set_up_form(self, widget):
+    def _set_up_form(self, widget, path):
         layout = QFormLayout(widget)
 
         images_path_label = QLabel("Path where the images are", widget)
         self._images_path_input = QLineEdit(widget)
-        self._images_path_input.setText("/home/agusgs/Projects/CardiAP/DesktopApp/photos_examples/c1d000.tif")
+        self._images_path_input.setText(path)
         self._images_path_error = QLabel("This field is required")
         self._images_path_error.hide()
 
