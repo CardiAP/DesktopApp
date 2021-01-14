@@ -1,20 +1,167 @@
 import os
 
 import cv2
-from PyQt5.QtCore import Qt, QRectF, pyqtSignal, QPointF
-from PyQt5.QtGui import QFont, QPixmap, QPen, QImage, QIntValidator
-from PyQt5.QtWidgets import QWidget, QLabel, QFrame, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, \
-    QSlider, QGridLayout, QLineEdit, QHBoxLayout, QPushButton, QDialog, QDialogButtonBox
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QFont, QIntValidator
+from PyQt5.QtWidgets import QWidget, QLabel, QFrame, QVBoxLayout, \
+    QSlider, QGridLayout, QLineEdit, QHBoxLayout, QPushButton
 
 from app.image_settings_modal import ImageSettingsModal
+from app.views.analysis_input_parameters_form import \
+    AnalysisInputParametersForm
+from app.views.image_customization_form import ImageCustomizationForm
+from app.views.image_preview import ImagePreview, \
+    NeedToSelectImageAreaToAnalyze
 
 
-class ImageSettings(QWidget):
+class AnalysisParametrizationErrors(object):
+    def __init__(self, image_selection_errors, input_parameters_errors,
+                 image_customization_errors):
+        self._image_customization_errors = image_customization_errors
+        self._input_parameters_errors = input_parameters_errors
+        self._image_selection_errors = image_selection_errors
+
+    def any(self):
+        return self._image_selection_errors.any() or \
+               self._input_parameters_errors.any() or \
+               self._image_customization_errors.any()
+
+    def for_image_customization_form(self):
+        return self._image_customization_errors
+
+    def for_analysis_input_form(self):
+        return self._input_parameters_errors
+
+    def for_image_preview(self):
+        return self._image_selection_errors
+
+
+class AnalysisParametrization2(object):
+    def __init__(self, file, image_customization, input_parameters,
+                 image_selection):
+        self._file = file
+        self._image_selection = image_selection
+        self._input_parameters = input_parameters
+        self._image_customization = image_customization
+
+    def validate(self):
+        return AnalysisParametrizationErrors(self._image_selection.validate(),
+                                             self._input_parameters.validate(),
+                                             self._image_customization.validate())
+
+    def copy_for(self, file):
+        return self.__class__(file, self._image_customization.copy(),
+                              self._input_parameters.copy(),
+                              self._image_customization.copy())
+
+
+class ParametersCustomizationStrategy(object):
+    SINGLE_IMAGE_CUSTOMIZATION_STRATEGY = 1
+    MULTIPLE_IMAGE_CUSTOMIZATION_STRATEGY = 0
+
+    def __init__(self, strategy_id):
+        self._strategy_id = strategy_id
+
+    def apply_to(self, analysis, parametrization):
+        if self.use_same_parametrization_for_all():
+            analysis.use_same_parametrization_for_all(parametrization)
+        elif self.use_different_parametrization_for_each():
+            analysis.use_different_parametrization_for_each(parametrization)
+
+    def use_same_parametrization_for_all(self):
+        return self.SINGLE_IMAGE_CUSTOMIZATION_STRATEGY == self._strategy_id
+
+    def use_different_parametrization_for_each(self):
+        return self.MULTIPLE_IMAGE_CUSTOMIZATION_STRATEGY == self._strategy_id
+
+
+class AnalysisParametrizationForm(QWidget):
+    analysis_parametrization_finished = pyqtSignal(AnalysisParametrization2)
+    go_back = pyqtSignal()
+
+    def __init__(self, file):
+        super().__init__()
+        self._file = file
+        self._setup()
+
+    def _setup(self):
+        font = QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+
+        self._line = QFrame(self)
+        self._line.setFrameShape(QFrame.HLine)
+        self._line.setFrameShadow(QFrame.Sunken)
+
+        self._layout = QHBoxLayout()
+        self.setLayout(self._layout)
+        self._setup_left_side_widget()
+        self._image_preview = ImagePreview(self._file)
+        self._layout.addWidget(self._image_preview)
+
+    def _setup_left_side_widget(self):
+        font = QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+
+        left_side_widget = QWidget()
+        left_side_widget.setStyleSheet("max-width: 400px;")
+        left_side_layout = QVBoxLayout()
+        left_side_layout.setAlignment(Qt.AlignTop)
+        left_side_widget.setLayout(left_side_layout)
+
+        image_name_label = QLabel(f'Image: {self._file.name}', self)
+        image_name_label.setAlignment(Qt.AlignLeft)
+        image_name_label.setFont(font)
+        image_name_label.setStyleSheet("max-height: 30px;")
+
+        left_side_layout.addWidget(image_name_label)
+        left_side_layout.addWidget(self._line)
+
+        self._image_customization_form = ImageCustomizationForm()
+        self._image_customization_form.customization_changed.connect(
+            lambda customization: self._notify_image_preview(customization))
+
+        left_side_layout.addWidget(self._image_customization_form)
+        left_side_layout.addWidget(self._line)
+        self._analysis_input_form = AnalysisInputParametersForm()
+        left_side_layout.addWidget(self._analysis_input_form)
+
+        continue_button = QPushButton("Continue", self)
+        continue_button.clicked.connect(
+            lambda: self._emit_parametrization_finished())
+        left_side_layout.addWidget(continue_button)
+
+        self._layout.addWidget(left_side_widget)
+
+    def _emit_parametrization_finished(self):
+        return self.analysis_parametrization_finished.emit(
+            AnalysisParametrization2(
+                self._file,
+                self._image_customization_form.parametrization(),
+                self._analysis_input_form.parametrization(),
+                self._image_preview.image_selection()))
+
+    def _notify_image_preview(self, customization):
+        self._image_preview.apply_customization(customization)
+
+    def handle_validation_errors(self, errors):
+        self._image_customization_form.handle_errors(
+            errors.for_image_customization_form())
+        self._analysis_input_form.handle_errors(
+            errors.for_analysis_input_form())
+        self._image_preview.handle_errors(errors.for_image_preview())
+
+    def customization_strategy(self):
+        modal = ImageSettingsModal()
+        return ParametersCustomizationStrategy(modal.exec())
+
+
+class AnalysisParametrization(QWidget):
     finished = pyqtSignal()
 
-    def __init__(self, dyssynchrony_configuration):
+    def __init__(self):
         super().__init__()
-        self._dyssynchrony_configuration = dyssynchrony_configuration
         self._image_path = None
         self._image_name = None
         self._image = None
@@ -32,7 +179,8 @@ class ImageSettings(QWidget):
     def _set_customization_strategy(self):
         if self._dyssynchrony_configuration.need_to_select_customization_strategy():
             strategy = self._image_customization_stategy()
-            self._dyssynchrony_configuration.set_image_customization_strategy(strategy)
+            self._dyssynchrony_configuration.set_image_customization_strategy(
+                strategy)
 
     def _image_customization_stategy(self):
         modal = ImageSettingsModal()
@@ -48,7 +196,7 @@ class ImageSettings(QWidget):
         self._sigma_color = 1
         self._sigma_spatial = 1
         self._cropping_coordinates = None
-        self._image_cropper.set_image(self._image)
+        self._image_preview.set_image(self._image)
 
     def _setup_ui(self):
         font = QFont()
@@ -79,9 +227,9 @@ class ImageSettings(QWidget):
         form_widget = QWidget(self)
         self._setup_form(form_widget)
         self._layout.addWidget(form_widget)
-        self._image_cropper = ImageCropper(self)
-        self._image_cropper.cropped.connect(self.set_cropping_coordinates)
-        layout.addWidget(self._image_cropper)
+        self._image_preview = ImagePreview(self)
+        self._image_preview.cropped.connect(self.set_cropping_coordinates)
+        layout.addWidget(self._image_preview)
         self.setLayout(layout)
 
     def _reset_settings(self):
@@ -139,13 +287,16 @@ class ImageSettings(QWidget):
         filter_title.setFont(filter_title_font)
         layout.addWidget(filter_title, 5, 0, 1, 2)
 
-        filter_diameter_label = QLabel("Diameter of each pixel neighborhood that is used during filtering", widget)
+        filter_diameter_label = QLabel(
+            "Diameter of each pixel neighborhood that is used during filtering",
+            widget)
         filter_diameter_label.setWordWrap(True)
         self._filter_diameter_slider = QSlider(Qt.Horizontal, widget)
         self._filter_diameter_slider.setMinimum(1)
         self._filter_diameter_slider.setMaximum(40)
         self._filter_diameter_slider.setValue(1)
-        self._filter_diameter_slider.valueChanged[int].connect(self._change_filter_diameter)
+        self._filter_diameter_slider.valueChanged[int].connect(
+            self._change_filter_diameter)
 
         layout.addWidget(filter_diameter_label, 6, 0, 1, 2)
         layout.addWidget(self._filter_diameter_slider, 7, 0, 1, 2)
@@ -158,7 +309,8 @@ class ImageSettings(QWidget):
         self._filter_sigma_color_slider.setMinimum(1)
         self._filter_sigma_color_slider.setMaximum(500)
         self._filter_sigma_color_slider.setValue(1)
-        self._filter_sigma_color_slider.valueChanged[int].connect(self._change_filter_sigma_color)
+        self._filter_sigma_color_slider.valueChanged[int].connect(
+            self._change_filter_sigma_color)
 
         layout.addWidget(filter_sigma_color_label, 8, 0, 1, 2)
         layout.addWidget(self._filter_sigma_color_slider, 9, 0, 1, 2)
@@ -171,7 +323,8 @@ class ImageSettings(QWidget):
         self._filter_sigma_spatial_slider.setMinimum(1)
         self._filter_sigma_spatial_slider.setMaximum(500)
         self._filter_sigma_spatial_slider.setValue(1)
-        self._filter_sigma_spatial_slider.valueChanged[int].connect(self._change_filter_sigma_spatial)
+        self._filter_sigma_spatial_slider.valueChanged[int].connect(
+            self._change_filter_sigma_spatial)
 
         layout.addWidget(filter_sigma_spatial_label, 10, 0, 1, 2)
         layout.addWidget(self._filter_sigma_spatial_slider, 11, 0, 1, 2)
@@ -202,7 +355,8 @@ class ImageSettings(QWidget):
         self._calibration_error.hide()
         layout.addWidget(self._calibration_error, 18, 0, 1, 2)
 
-        slice_width_label = QLabel("The width (in pixels) of each slice", widget)
+        slice_width_label = QLabel("The width (in pixels) of each slice",
+                                   widget)
         layout.addWidget(slice_width_label, 19, 0, 1, 2)
 
         self._slice_width_input = QLineEdit(widget)
@@ -249,7 +403,7 @@ class ImageSettings(QWidget):
         self._validate_form()
         if self._form_valid():
             if self._cropping_coordinates is None:
-                NeedToCropImage().exec()
+                NeedToSelectImageAreaToAnalyze().exec()
             else:
                 if self._dyssynchrony_configuration.need_to_select_customization_strategy():
                     self._set_customization_strategy()
@@ -295,7 +449,8 @@ class ImageSettings(QWidget):
         self._update_image()
 
     def _update_image(self):
-        alpha_contrast = float(131 * (self._contrast_value + 127)) / (127 * (131 - self._contrast_value))
+        alpha_contrast = float(131 * (self._contrast_value + 127)) / (
+                127 * (131 - self._contrast_value))
         gamma_contrast = 127 * (1 - alpha_contrast)
 
         if self._brigth_value > 0:
@@ -309,10 +464,13 @@ class ImageSettings(QWidget):
         gamma_brightness = shadow
 
         image = self._image
-        image = cv2.addWeighted(image, alpha_brightness, image, 0, gamma_brightness)
-        image = cv2.addWeighted(image, alpha_contrast, image, 0, gamma_contrast)
-        image = cv2.bilateralFilter(image, self._filter_diameter, self._sigma_color, self._sigma_spatial)
-        self._image_cropper.set_image(image)
+        image = cv2.addWeighted(image, alpha_brightness, image, 0,
+                                gamma_brightness)
+        image = cv2.addWeighted(image, alpha_contrast, image, 0,
+                                gamma_contrast)
+        image = cv2.bilateralFilter(image, self._filter_diameter,
+                                    self._sigma_color, self._sigma_spatial)
+        self._image_preview.set_image(image)
 
     def set_cropping_coordinates(self, position1, position2):
         self._cropping_coordinates = {
@@ -328,76 +486,5 @@ class ImageSettings(QWidget):
         if os.path.isfile(path):
             return path
         else:
-            return [f'{path}/{file}' for file in os.listdir(path) if file.endswith(".tif")][0]
-
-
-class ImageCropper(QGraphicsView):
-    cropped = pyqtSignal(QPointF, QPointF)
-
-    def __init__(self, parent=None, ):
-        super().__init__(QGraphicsScene(), parent)
-        self.setAlignment(Qt.AlignCenter)
-        self._click_pos = None
-        self._release_pos = None
-
-    def set_image(self, image):
-        qtimage = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888).rgbSwapped()
-        self.scene().clear()
-        self._rect = QGraphicsRectItem()
-        self._rect.setPen(QPen(Qt.red, 2, Qt.SolidLine))
-        self._image = self.scene().addPixmap(QPixmap.fromImage(qtimage))
-        self.scene().addItem(self._rect)
-
-    def mousePressEvent(self, event):
-        scene_position = self.mapToScene(event.pos())
-        image_position = self._image.mapFromScene(scene_position)
-
-        if self._image.contains(image_position):
-            self._click_pos = image_position
-            self._release_pos = None
-        else:
-            self._click_pos = None
-            self._release_pos = None
-
-    def mouseReleaseEvent(self, event):
-        scene_position = self.mapToScene(event.pos())
-        image_position = self._image.mapFromScene(scene_position)
-
-        if self._image.contains(image_position):
-            self._release_pos = image_position
-            if self._click_pos is not None:
-                self.cropped.emit(self._click_pos, self._release_pos)
-            else:
-                self._click_pos = None
-        else:
-            self._click_pos = None
-            self._release_pos = None
-
-    def mouseMoveEvent(self, event):
-        scene_position = self.mapToScene(event.pos())
-        image_position = self._image.mapFromScene(scene_position)
-
-        if (self._click_pos is not None) and (self._image.contains(image_position)):
-            self._rect.setRect(QRectF(self._click_pos, scene_position))
-        else:
-            self._rect.setRect(QRectF())
-
-
-class NeedToCropImage(QDialog):
-
-    def __init__(self):
-        super(NeedToCropImage, self).__init__()
-
-        self.setWindowTitle("CardiAP")
-
-        label = QLabel(f'Please select the section of the image you want to analyze')
-        label.setWordWrap(True)
-        button = QDialogButtonBox.Ok
-
-        self.buttonBox = QDialogButtonBox(button)
-        self.buttonBox.accepted.connect(self.accept)
-
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(label)
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
+            return [f'{path}/{file}' for file in os.listdir(path) if
+                    file.endswith(".tif")][0]

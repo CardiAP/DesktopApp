@@ -5,12 +5,10 @@ from PyQt5.QtWidgets import QWidget, QLabel, QFormLayout, QFrame, QLineEdit, QVB
 
 
 class ImagesSelectionForm(QWidget):
-    finished = pyqtSignal()
+    form_submitted = pyqtSignal(str)
 
-    def __init__(self, dyssynchrony_configuration):
+    def __init__(self):
         super().__init__()
-        self._dyssynchrony_configuration = dyssynchrony_configuration
-
         layout = QVBoxLayout()
 
         font = QFont()
@@ -39,9 +37,7 @@ class ImagesSelectionForm(QWidget):
     def _form_submit(self):
         self._validate_form()
         if self._is_form_valid():
-            image_path = self._images_path_input.text()
-            self._dyssynchrony_configuration.set_image_path(image_path)
-            self.finished.emit()
+            self.form_submitted.emit(self._images_path_input.text())
 
     def _is_form_valid(self):
         return self._images_path_input.text() != ""

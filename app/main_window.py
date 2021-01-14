@@ -6,12 +6,11 @@ from app.analysis_results_refinement import AnalysisResultsRefinement
 from app.controllers.analysis_results_refinment_controller import AnalysisResultsRefinementController
 from app.controllers.data_export_controller import DataExportController
 from app.controllers.data_points_selection_controller import DataPointsSelectionController
+from app.controllers.image_selection import Controller as ImageSelectionController
 from app.data_export import DataExport
 from app.data_points_selection import DataPointsSelection
-from app.image_settings import ImageSettings
-from app.images_selection_form import ImagesSelectionForm
+from app.views.analysis_parametrization import AnalysisParametrization
 from app.models.dyssynchrony_analysis_results import DyssynchronyAnalysisResults
-from app.models.dyssynchrony_configuration import DyssynchronyConfiguration
 from app.welcome_view import WelcomeView
 
 
@@ -22,15 +21,14 @@ class MainWindow(QMainWindow):
 
         self._setup_menu_bar()
         self._setup_layout()
-        self._change_current_view_to(WelcomeView())
-        self._dyssynchrony_configuration = DyssynchronyConfiguration()
-        self._dyssynchrony_analysis_results = DyssynchronyAnalysisResults()
+        self.replace_central_widget(WelcomeView())
+        self._dyssynchrony_analysis_resultpasss = DyssynchronyAnalysisResults()
 
-    def _change_current_view_to(self, new_view):
+    def replace_central_widget(self, widget):
         old_view = self._current_view
-        self._mainLayout.replaceWidget(old_view, new_view)
+        self._mainLayout.replaceWidget(old_view, widget)
         self._current_view.close()
-        self._current_view = new_view
+        self._current_view = widget
 
     def _setup_layout(self):
         self._mainWidget = QWidget()
@@ -62,30 +60,27 @@ class MainWindow(QMainWindow):
         self.setMenuBar(menu_bar)
 
     def _go_to_image_selection(self):
-        self._dyssynchrony_configuration.reset()
-        image_selection = ImagesSelectionForm(self._dyssynchrony_configuration)
-        image_selection.finished.connect(self._go_to_image_settings)
-        self._change_current_view_to(image_selection)
+        ImageSelectionController(self)
 
     def _go_to_image_settings(self):
-        image_settings = ImageSettings(self._dyssynchrony_configuration)
+        image_settings = AnalysisParametrization(self._dyssynchrony_configuration)
         image_settings.finished.connect(self._go_to_dyssynchrony_analysis_results)
-        self._change_current_view_to(image_settings)
+        self.replace_central_widget(image_settings)
 
     def _go_to_dyssynchrony_analysis_results(self):
         self._dyssynchrony_analysis_results.for_configuration(self._dyssynchrony_configuration)
         results_refinement = AnalysisResultsRefinement()
         AnalysisResultsRefinementController(self._dyssynchrony_analysis_results, results_refinement)
         results_refinement.finished.connect(self._go_to_data_selection)
-        self._change_current_view_to(results_refinement)
+        self.replace_central_widget(results_refinement)
 
     def _go_to_data_selection(self):
         data_selection = DataPointsSelection()
         DataPointsSelectionController(self._dyssynchrony_analysis_results, data_selection)
         data_selection.finished.connect(self._go_to_data_export)
-        self._change_current_view_to(data_selection)
+        self.replace_central_widget(data_selection)
 
     def _go_to_data_export(self):
         data_export = DataExport()
         DataExportController(self._dyssynchrony_analysis_results, data_export)
-        self._change_current_view_to(data_export)
+        self.replace_central_widget(data_export)

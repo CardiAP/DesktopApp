@@ -1,7 +1,7 @@
 import os
 
 
-class DyssynchronyConfiguration:
+class AnalysisParametrization:
     NO_CUSTOMIZATION_STRATEGY = -1
     SINGLE_IMAGE_CUSTOMIZATION_STRATEGY = 1
     MULTIPLE_IMAGE_CUSTOMIZATION_STRATEGY = 0
