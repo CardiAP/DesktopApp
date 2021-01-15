@@ -4,9 +4,9 @@ import  csv
 # import scipy.stats
 #     '''This function finds a tList in sec yList - measurements ySS - the steady state value of y returns amplitude of exponent tau - the time constant'''
 from math import log
-from pylab import lstsq
-from pylab import matrix
-from pylab import exp
+from scipy.linalg import lstsq
+from scipy import matrix
+from scipy import exp
 
 def maximo_peak (vector):
     import numpy as np
