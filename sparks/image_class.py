@@ -3,10 +3,11 @@ import numpy as np
 from PIL import Image
 
 
-class image_processing:
+class Image_Processing:
     
-    def __init__(self, dimension):
-        self.shape = dimension
+    def __init__(self, path, photo_name):
+        self.path = path
+        self.photo_name = photo_name
         
     def select_roi (self): 
         ''' This function allows to select a rectangular region of interest. It uses as parameter an image 
@@ -21,7 +22,7 @@ class image_processing:
         imCrop = self[int(roi[1]):int(roi[1]+roi[3]), int(roi[0]):int(roi[0]+roi[2])]
         return imCrop
 
-    def display_image (name,self):
+    def display_image (self, name):
         '''Show image in a window'''
         cv2.imshow(name, self)
         cv2.waitKey(0)  # with 'enter' to break

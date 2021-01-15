@@ -102,7 +102,7 @@ def time_to_peak (cantidad_sparks, maximum_time, minimum_time):
 
 def fitExponent(tList,yList,ySS=0):
     bList = [log(max(y-ySS,1e-6)) for y in yList]
-    (w,residuals,rank,sing_vals) = lstsq(matrix([[1,t] for t in tList]),matrix(bList).T, rcond=None)
+    (w,residuals,rank,sing_vals) = lstsq(matrix([[1,t] for t in tList]),matrix(bList).T)
     tau = -1.0/w[1,0]
     amplitude = exp(w[0,0])
     return (amplitude,tau)

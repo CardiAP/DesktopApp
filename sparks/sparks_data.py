@@ -1,15 +1,16 @@
-import prueba_image_spark
+import Image_Sparks
 import cv2
 import sparks_analysis
+import image_class
 
 # path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
-path = 'C:/Users/Leand/OneDrive/Documentos/Lean/Analizador_imagenes_calcio/Imagenes_confocal/sp_para entrenar/'
-photo_name = '3arf006'
+image = image_class.Image_Processing('C:/Users/Leand/OneDrive/Documentos/Lean/Analizador_imagenes_calcio/Imagenes_confocal/sp_para entrenar/', '3arf006')
 
-image = prueba_image_spark.Read_image(path, photo_name)
-imcrop = prueba_image_spark.Image_cropping(image)
-contours, img_processed = prueba_image_spark.Image_processing(imcrop)
-list_img_col, list_img_row, x_position, y_position, width, high = prueba_image_spark.Image_analysis(contours, img_processed, image)
+
+image = cv2.imread(image.path + image.photo_name + ".tif")
+imcrop = Image_Sparks.Image_Sparks.Image_cropping(image)
+contours, img_processed = Image_Sparks.Image_Sparks.Image_processing(imcrop)
+list_img_col, list_img_row, x_position, y_position, width, high = Image_Sparks.Image_Sparks.Image_analysis(contours, img_processed, image)
 
 # Detect each event and give it a category
 def write_points(event, x_position, y_position, flags, param):
