@@ -29,6 +29,9 @@ def maximo_spark(lista_ydatas):
         datos_tiempos [i] = picos [0]
         datos_intensidades [i] = picos [1]
     return cantidad_sparks, datos_tiempos, datos_intensidades
+
+##  if len(max_peaks) == 0: raise ValueError("Peaks not found")
+
 #  Detección de mínimos locales
 # Calculate the n-th discrete difference along the given axis. The first difference is given by out[i] = a[i+1] - a[i] along the given axis, higher differences are calculated by using diff recursively.
 # The sign function returns -1 if x < 0, 0 if x==0, 1 if x > 0. nan is returned for nan inputs.
