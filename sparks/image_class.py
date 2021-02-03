@@ -114,6 +114,5 @@ class Image_Processing:
 
 
         # Calculate new histogram with desired range
-        new_hist = cv2.calcHist([grayscale_image],[0],None,[256],[minimum_gray,maximum_gray])
         auto_result = cv2.convertScaleAbs(self, alpha=alpha, beta=beta)
         return (auto_result, alpha, beta)

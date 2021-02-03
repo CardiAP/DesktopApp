@@ -3,8 +3,8 @@ import cv2
 import sparks_analysis
 import image_class
 
-# path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
-image = image_class.Image_Processing('C:/Users/Leand/OneDrive/Documentos/Lean/Analizador_imagenes_calcio/Imagenes_confocal/sp_para entrenar/', '3arf006')
+path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
+image = image_class.Image_Processing(path, '3arf006')
 
 
 image = cv2.imread(image.path + image.photo_name + ".tif")

@@ -5,15 +5,15 @@ import numpy as np
 
 class Image_Sparks:
 
-    def Image_cropping(image):
+    def Image_cropping(self):
         '''Uses numpy type image for selecting and cropping'''
-        r = image_class.Image_Processing.select_roi(image)
-        imcrop = image_class.Image_Processing.crop_image(image,r)
+        r = image_class.Image_Processing.select_roi(self)
+        imcrop = image_class.Image_Processing.crop_image(self,r)
         return imcrop
 
-    def Image_processing(image):
+    def Image_processing(self):
         '''Uses numpy type image and returns a copy of the image and a filtered image'''
-        img_processed, alpha, beta = image_class.Image_Processing.automatic_brightness_and_contrast(image)
+        img_processed, alpha, beta = image_class.Image_Processing.automatic_brightness_and_contrast(self)
         image_class.Image_Processing.display_image(img_processed, 'Image processed',)
         filtered = image_class.Image_Processing.image_filtration (img_processed, 3, 100)
         contours = image_class.Image_Processing.find_contourns(filtered) # Obtains elements by contours
