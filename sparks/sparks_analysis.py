@@ -46,35 +46,39 @@ def minimo_bl (vector):
 # Esta función calcula los mínimos de la selección de toda la célula tomando los mínimos calculados, quedandose con el más chico entre dos máximos.
 # Devuelve el valor de tiempos y las intensidades en dataframes por separado.
 def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
-    if 'nan' in data_time_values:
-        sparks_tiempo0 = []
-        sparks_intensidad0 = []        
-        sparks_tiempo_n = []
-        sparks_intensidad_n = []
-        for i in range (0,cantidad_sparks):
-            picos = minimo_bl (list_img_col[i])
-            lista_min = []
-            for minimo in picos:
+    sparks_tiempo0 = []
+    sparks_intensidad0 = []        
+    sparks_tiempo_n = []
+    sparks_intensidad_n = []
+    for i in range (0,cantidad_sparks):
+        picos = minimo_bl (list_img_col[i])
+        lista_min = []
+        for minimo in picos:
+            if 'nan' not in data_time_values:
                 picomenor = int(data_time_values[i])
                 if minimo < picomenor:
                     y_min = list_img_col[i] [minimo]
                     lista_min.append((minimo,y_min))
-            try:
-                minimo_lista_mins = min(lista_min, key = lambda t: t[1])
-                sparks_tiempo0.append(minimo_lista_mins[0])
-                sparks_intensidad0.append (minimo_lista_mins[1])
-            except ValueError:
-                minimo_lista_mins = min (list_img_col[i][0:int(data_time_values[i])])
-                minimimo = list_img_col[i].index(minimo_lista_mins)
-                sparks_tiempo0.append(minimimo)
-                sparks_intensidad0.append (minimo_lista_mins)
+                try:
+                    minimo_lista_mins = min(lista_min, key = lambda t: t[1])
+                    sparks_tiempo0.append(minimo_lista_mins[0])
+                    sparks_intensidad0.append (minimo_lista_mins[1])
+                except ValueError:
+                    minimo_lista_mins = min (list_img_col[i][0:int(data_time_values[i])])
+                    minimimo = list_img_col[i].index(minimo_lista_mins)
+                    sparks_tiempo0.append(minimimo)
+                    sparks_intensidad0.append (minimo_lista_mins)
+            else:
+                sparks_tiempo0.append('nan')
+                sparks_intensidad0.append ('nan')
 
         # final minimun
 
-        for i in range (0,cantidad_sparks):
-            picos = minimo_bl (list_img_col[i])
-            lista_mins = []
-            for minimo in picos:
+    for i in range (0,cantidad_sparks):
+        picos = minimo_bl (list_img_col[i])
+        lista_mins = []
+        for minimo in picos:
+            if 'nan' not in data_time_values:
                 picomenor = int(data_time_values[i])
                 if minimo > picomenor:
                     y_min = list_img_col[i] [minimo]
@@ -87,10 +91,13 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
                 minimo_lista_min = min (list_img_col[i][int(data_time_values[i]):])
                 minimimo_n = list_img_col[i].index(minimo_lista_min)
                 sparks_tiempo_n.append(minimimo_n)
-                sparks_intensidad_n.append (minimo_lista_min)   
+                sparks_intensidad_n.append (minimo_lista_min)
+            else:
+                sparks_tiempo_n.append('nan')
+                sparks_intensidad_n.append ('nan')
+                
+                
         return sparks_tiempo0, sparks_intensidad0, sparks_tiempo_n, sparks_intensidad_n
-    else:
-        return 'nan','nan','nan','nan'
 
 # Calcula la amplitud de cada pico como la diferencia entre la intensidad máximo y mínimo 
 def sparks_amplitude(cantidad_sparks, maximum_int, minimum_int):
@@ -108,17 +115,14 @@ def sparks_amplitude(cantidad_sparks, maximum_int, minimum_int):
 
 # Cálculo del tiempo al pico como la diferencia en el tiempo máximo y mínimo para toda la selección
 def time_to_peak (cantidad_sparks, maximum_time, minimum_time):
-    if  ('nan' in maximum_time or 'nan' in minimum_time):    
-        sparks_tiempo_al_pico = []
-        for sp in range  (0, cantidad_sparks):
+    sparks_tiempo_al_pico = []
+    for sp in range  (0, cantidad_sparks):
+        if  ('nan' not in maximum_time or 'nan' not in minimum_time):    
             sp_ttp = maximum_time[sp] - minimum_time [sp]
             sparks_tiempo_al_pico.append(sp_ttp)
-        return sparks_tiempo_al_pico
-    else:
-        sparks_tiempo_al_pico = []
-        for sp in range  (0, cantidad_sparks):
+        else:
             sparks_tiempo_al_pico.append('nan')
-        return sparks_tiempo_al_pico
+    return sparks_tiempo_al_pico
 
 def fitExponent(tList,yList,ySS=0):
     try:
@@ -134,9 +138,9 @@ def fitExponent(tList,yList,ySS=0):
 
 # Calcula el tiempo al 50% del pico de cada pico de la selección y el calculo del FDHM
 def sparks_ttpeak50 (cantidad_sparks, list_img_col, maximum_int, minimum_int, maximum_time, minimum_time):
-    if  ('nan' in maximum_time or 'nan' in minimum_time): 
-        sparks_tiempo_pico50 = []
-        for sp in range  (0, cantidad_sparks):
+    sparks_tiempo_pico50 = []
+    for sp in range  (0, cantidad_sparks):
+        if  ('nan' not in maximum_time or 'nan' not in minimum_time): 
             sp_amp50 = (maximum_int [sp] + minimum_int [sp])/2   
             x1 = np.asarray (range (int(minimum_time [sp]), int(maximum_time [sp]+1))) 
             y1 = np.asarray (list_img_col [sp] [int(minimum_time [sp]) : int(maximum_time [sp]+1)])
@@ -144,12 +148,9 @@ def sparks_ttpeak50 (cantidad_sparks, list_img_col, maximum_int, minimum_int, ma
             (amplitudeEst,tauEst) = fitExponent(x1,y1,ySS)
             sp_ttp50 = (np.log((sp_amp50 -ySS)/ amplitudeEst))*(-tauEst)
             sparks_tiempo_pico50.append (sp_ttp50)
-        return sparks_tiempo_pico50
-    else:
-        sparks_tiempo_pico50 = []
-        for sp in range  (0, cantidad_sparks):
+        else:
             sparks_tiempo_pico50.append ('nan')
-        return sparks_tiempo_pico50
+    return sparks_tiempo_pico50            
 
 # Aplico la función para tau a la selección
 def tau(cantidad_sparks, list_img_col, maximum_time, minimum_time):
