@@ -47,30 +47,30 @@ def minimo_bl (vector):
 # Devuelve el valor de tiempos y las intensidades en dataframes por separado.
 def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
     sparks_tiempo0 = []
-    sparks_intensidad0 = []        
+    sparks_intensidad0 = []
     sparks_tiempo_n = []
     sparks_intensidad_n = []
     for i in range (0,cantidad_sparks):
         picos = minimo_bl (list_img_col[i])
         lista_min = []
         for minimo in picos:
-            if 'nan' not in data_time_values:
-                picomenor = int(data_time_values[i])
-                if minimo < picomenor:
-                    y_min = list_img_col[i] [minimo]
-                    lista_min.append((minimo,y_min))
-                try:
-                    minimo_lista_mins = min(lista_min, key = lambda t: t[1])
-                    sparks_tiempo0.append(minimo_lista_mins[0])
-                    sparks_intensidad0.append (minimo_lista_mins[1])
-                except ValueError:
-                    minimo_lista_mins = min (list_img_col[i][0:int(data_time_values[i])])
-                    minimimo = list_img_col[i].index(minimo_lista_mins)
-                    sparks_tiempo0.append(minimimo)
-                    sparks_intensidad0.append (minimo_lista_mins)
-            else:
-                sparks_tiempo0.append('nan')
-                sparks_intensidad0.append ('nan')
+            picomenor = int(data_time_values[i])
+            if minimo < picomenor:
+                y_min = list_img_col[i] [minimo]
+                lista_min.append((minimo,y_min))
+                if 'nan' not in data_time_values:
+                    try:
+                        minimo_lista_mins = min(lista_min, key = lambda t: t[1])
+                        sparks_tiempo0.append(minimo_lista_mins[0])
+                        sparks_intensidad0.append (minimo_lista_mins[1])
+                    except ValueError:
+                        minimo_lista_mins = min (list_img_col[i][0:int(data_time_values[i])])
+                        minimimo = list_img_col[i].index(minimo_lista_mins)
+                        sparks_tiempo0.append(minimimo)
+                        sparks_intensidad0.append (minimo_lista_mins)
+                else:
+                    sparks_tiempo0.append('nan')
+                    sparks_intensidad0.append ('nan')
 
         # final minimun
 
@@ -83,15 +83,15 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
                 if minimo > picomenor:
                     y_min = list_img_col[i] [minimo]
                     lista_mins.append((minimo,y_min))
-            try:
-                minimo_lista_min = min(lista_mins, key = lambda t: t[1])
-                sparks_tiempo_n.append(minimo_lista_min[0])
-                sparks_intensidad_n.append (minimo_lista_min[1])
-            except ValueError:
-                minimo_lista_min = min (list_img_col[i][int(data_time_values[i]):])
-                minimimo_n = list_img_col[i].index(minimo_lista_min)
-                sparks_tiempo_n.append(minimimo_n)
-                sparks_intensidad_n.append (minimo_lista_min)
+                    try:
+                        minimo_lista_min = min(lista_mins, key = lambda t: t[1])
+                        sparks_tiempo_n.append(minimo_lista_min[0])
+                        sparks_intensidad_n.append (minimo_lista_min[1])
+                    except ValueError:
+                        minimo_lista_min = min (list_img_col[i][int(data_time_values[i]):])
+                        minimimo_n = list_img_col[i].index(minimo_lista_min)
+                        sparks_tiempo_n.append(minimimo_n)
+                        sparks_intensidad_n.append (minimo_lista_min)
             else:
                 sparks_tiempo_n.append('nan')
                 sparks_intensidad_n.append ('nan')
@@ -101,17 +101,15 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
 
 # Calcula la amplitud de cada pico como la diferencia entre la intensidad máximo y mínimo 
 def sparks_amplitude(cantidad_sparks, maximum_int, minimum_int):
-    if  ('nan' in maximum_int or 'nan' in minimum_int):
-        sparks_amplitud = []
-        for sp in range(0, cantidad_sparks):
+    sparks_amplitud = []
+    for sp in range(0, cantidad_sparks):
+        if  ('nan' not in maximum_int or 'nan' not in minimum_int):
             sp_amplitud = (maximum_int [sp] - minimum_int [sp])/minimum_int [sp]
             sparks_amplitud.append(sp_amplitud)
+        else:
+            sparks_amplitud.append('nan')
         return sparks_amplitud
-    else:
-        sparks_amplitud = []
-        for sp in range(0, cantidad_sparks):
-            sp_amplitud = 'nan'
-            sparks_amplitud.append(sp_amplitud) 
+
 
 # Cálculo del tiempo al pico como la diferencia en el tiempo máximo y mínimo para toda la selección
 def time_to_peak (cantidad_sparks, maximum_time, minimum_time):
@@ -218,7 +216,7 @@ def analysis_process (list_img_col, list_img_row,x,y,w,h,flag):
         Columns = ['Spark_'+ str(x) for x in range(0, cantidad_sparks)]
         out_sparks = pd.DataFrame([datos_tiempos.values(),datos_intensidades.values()], columns = Columns).T
         out_sparks = pd.DataFrame(out_sparks.values, columns = ['tiempo_maximo', 'intensidad_maxima'])
-
+        print(out_sparks['tiempo_maximo'])
         minim = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo'])
 
         out_sparks['tiempo_minimo'] = minim[0]
