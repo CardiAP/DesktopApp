@@ -94,23 +94,17 @@ def minimo_sparks (cantidad_sparks, list_img_col, data_time_values):
 def sparks_amplitude(cantidad_sparks, maximum_int, minimum_int):
     sparks_amplitud = []
     for sp in range(0, cantidad_sparks):
-        if  ('nan' not in maximum_int or 'nan' not in minimum_int):
-            sp_amplitud = (maximum_int [sp] - minimum_int [sp])/minimum_int [sp]
-            sparks_amplitud.append(sp_amplitud)
-        else:
-            sparks_amplitud.append('nan')
-        return sparks_amplitud
+        sp_amplitud = (maximum_int [sp] - minimum_int [sp])/minimum_int [sp]
+        sparks_amplitud.append(sp_amplitud)
+    return sparks_amplitud
 
 
 # Cálculo del tiempo al pico como la diferencia en el tiempo máximo y mínimo para toda la selección
 def time_to_peak (cantidad_sparks, maximum_time, minimum_time):
     sparks_tiempo_al_pico = []
     for sp in range  (0, cantidad_sparks):
-        if  ('nan' not in maximum_time or 'nan' not in minimum_time):    
-            sp_ttp = maximum_time[sp] - minimum_time [sp]
-            sparks_tiempo_al_pico.append(sp_ttp)
-        else:
-            sparks_tiempo_al_pico.append('nan')
+        sp_ttp = maximum_time[sp] - minimum_time [sp]
+        sparks_tiempo_al_pico.append(sp_ttp)
     return sparks_tiempo_al_pico
 
 def fitExponent(tList,yList,ySS=0):
@@ -120,25 +114,20 @@ def fitExponent(tList,yList,ySS=0):
         tau = -1.0/w[1,0]
         amplitude = exp(w[0,0])
         return (amplitude,tau)
-    
     except ValueError:
-        return ('nan','nan')
-    
+        return('nan','nan')
 
 # Calcula el tiempo al 50% del pico de cada pico de la selección y el calculo del FDHM
 def sparks_ttpeak50 (cantidad_sparks, list_img_col, maximum_int, minimum_int, maximum_time, minimum_time):
     sparks_tiempo_pico50 = []
     for sp in range  (0, cantidad_sparks):
-        if  ('nan' not in maximum_time or 'nan' not in minimum_time): 
-            sp_amp50 = (maximum_int [sp] + minimum_int [sp])/2   
-            x1 = np.asarray (range (int(minimum_time [sp]), int(maximum_time [sp]+1))) 
-            y1 = np.asarray (list_img_col [sp] [int(minimum_time [sp]) : int(maximum_time [sp]+1)])
-            ySS = 0
-            (amplitudeEst,tauEst) = fitExponent(x1,y1,ySS)
-            sp_ttp50 = (np.log((sp_amp50 -ySS)/ amplitudeEst))*(-tauEst)
-            sparks_tiempo_pico50.append (sp_ttp50)
-        else:
-            sparks_tiempo_pico50.append ('nan')
+        sp_amp50 = (maximum_int [sp] + minimum_int [sp])/2   
+        x1 = np.asarray (range (int(minimum_time [sp]), int(maximum_time [sp]+1))) 
+        y1 = np.asarray (list_img_col [sp] [int(minimum_time [sp]) : int(maximum_time [sp]+1)])
+        ySS = 0
+        (amplitudeEst,tauEst) = fitExponent(x1,y1,ySS)
+        sp_ttp50 = (np.log((sp_amp50 -ySS)/ amplitudeEst))*(-tauEst)
+        sparks_tiempo_pico50.append (sp_ttp50)
     return sparks_tiempo_pico50            
 
 # Aplico la función para tau a la selección
@@ -210,22 +199,24 @@ def analysis_process (list_img_col, list_img_row,x,y,w,h,flag):
 
         if 'nan' not in out_sparks['tiempo_maximo']:
             minim = minimo_sparks (cantidad_sparks, list_img_col, out_sparks['tiempo_maximo'])
+            out_sparks['tiempo_minimo'] = minim[0]
+            out_sparks['intensidad_minima'] = minim[1]
+            out_sparks['tiempo_valle'] = minim[2]
+            out_sparks['intensidad_valle'] = minim[3]
+            #####ACA VA EL CODIGO DE ABAJO que calcula todo lo demas 
+            
         else:
-            lenth_nan = 'nan'*len(out_sparks['tiempo_maximo'])
-            minim = [(lenth_nan),(lenth_nan),(lenth_nan),(lenth_nan)]
+            minim = ['nan' for x in range(0,len(out_sparks['tiempo_maximo']))]
+            ###ACA va lo mismo que para minim pero para las columnas que quieras agregar
 
-        out_sparks['tiempo_minimo'] = minim[0]
-        out_sparks['intensidad_minima'] = minim[1]
-        out_sparks['tiempo_valle'] = minim[2]
-        out_sparks['intensidad_valle'] = minim[3]
 
-        print(out_sparks)
+        
         sparks_amplitud = sparks_amplitude(cantidad_sparks, out_sparks['intensidad_maxima'], out_sparks['intensidad_minima'])
         out_sparks['amplitud'] = sparks_amplitud
 
         sparks_tiempo_al_pico = time_to_peak (cantidad_sparks, out_sparks['tiempo_maximo'], out_sparks['tiempo_minimo'])
         out_sparks['TTP'] = sparks_tiempo_al_pico
-
+        print(out_sparks)
         sparks_tiempo_pico50 = sparks_ttpeak50 (cantidad_sparks, list_img_col, out_sparks['intensidad_maxima'], out_sparks['intensidad_minima'], out_sparks['tiempo_maximo'], out_sparks['tiempo_minimo'])
         out_sparks['TTP50'] = sparks_tiempo_pico50 - out_sparks['tiempo_minimo']
 
