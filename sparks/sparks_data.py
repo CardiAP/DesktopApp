@@ -2,9 +2,10 @@ import Image_Sparks
 import cv2
 import sparks_analysis
 import image_class
+import pandas as pd
 
 path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
-image = image_class.Image_Processing(path, '3arf006')
+image = image_class.Image_Processing(path, '3arf007')
 
 
 image = cv2.imread(image.path + image.photo_name + ".tif")
@@ -32,5 +33,6 @@ cv2.destroyAllWindows()
 # Take the processing data to analyze each spark and extract parameters
 
 parameters = sparks_analysis.analysis_process (list_img_col, list_img_row,x_position,y_position,width,high, img_points)
+pd.set_option("display.max_rows", None, "display.max_columns", None)
 print(parameters)
 #parameters.to_csv(path + photo_name)
