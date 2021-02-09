@@ -114,7 +114,7 @@ def sparks_ttpeak50 (list_img_col, maximum_int, minimum_int, maximum_time, minim
 
 # Aplico la función para tau a la selección
 def tau(list_img_col, maximum_time, minimum_time):
-    x = np.asarray(list (range(int(maximum_time), int(minimum_time)+1))) #* x_calibracion
+    x = np.asarray(list (range(int(maximum_time), int(minimum_time)+1)))
     y = np.asarray(list_img_col[int(maximum_time) : int(minimum_time)+1],dtype=np.float64)
     ySS = 0
     (amplitudeEst,tauEst) = fitExponent(x,y,ySS)
@@ -173,11 +173,6 @@ def analysis_process (list_img_col, list_img_row,x,y,w,h,flag):
 
         if datos_tiempos != 'nan':
             minim = minimo_sparks (list_img_col, datos_tiempos)
-            sparks_amplitud = sparks_amplitude(datos_intensidades, minim[1])
-            sparks_tiempo_al_pico = time_to_peak (datos_tiempos, minim[0])
-            sparks_tiempo_pico50 = sparks_ttpeak50 (list_img_col, datos_intensidades, minim[1], datos_tiempos, minim[0])
-            sp_tau = tau(list_img_col,  datos_tiempos, minim[2])
-            full_width = width (list_img_row)[0]
 
             out_data['tiempo_minimo'] = minimo_sparks (list_img_col, datos_tiempos)[0]
             out_data['intensidad_minima'] = minimo_sparks (list_img_col, datos_tiempos)[1]
@@ -201,15 +196,15 @@ def analysis_process (list_img_col, list_img_row,x,y,w,h,flag):
 
         print(type(out_data['sparks_tiempo_pico50_2']), out_data['sparks_tiempo_pico50_2'])
         try:
-            out_data['TTP50'] = sparks_tiempo_pico50 - out_data['tiempo_minimo']
+            out_data['TTP50'] = out_data['sparks_tiempo_pico50'] - out_data['tiempo_minimo']
         except:
             out_data['TTP50'] = 'nan'
         try:
-            out_data['FDHM'] = [A - B for (A, B) in zip(out_data['sparks_tiempo_pico50_2'], sparks_tiempo_pico50)]
+            out_data['FDHM'] = [A - B for (A, B) in zip(out_data['sparks_tiempo_pico50_2'], out_data['sparks_tiempo_pico50'])]
         except:
             out_data['FDHM'] = 'nan'
 
-        out_data['fullWidth'] = full_width
+        out_data['fullWidth'] = out_data['full_width']
         try:
             out_data['(ΔF/F0)/ΔTmax'] = out_data['sparks_amplitud']/out_data['TTP']
         except:
