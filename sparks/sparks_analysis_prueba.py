@@ -194,7 +194,6 @@ def analysis_process (list_img_col, list_img_row,x,y,w,h,flag):
             out_data['sp_tau'] = 'nan'
             out_data['full_width'] = 'nan'
 
-        print(type(out_data['sparks_tiempo_pico50_2']), out_data['sparks_tiempo_pico50_2'])
         try:
             out_data['TTP50'] = out_data['sparks_tiempo_pico50'] - out_data['tiempo_minimo']
         except:
