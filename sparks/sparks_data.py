@@ -5,12 +5,12 @@ import image_class
 import pandas as pd
 from pathlib import Path
 
-path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/'
+path = '/media/leandro/Volumen1TB/Lean/Analizador_imagenes_calcio/Sp/Imagenes_confocal/sp_para entrenar/subset_prueba/'
 pathlist = Path(path).glob('*.tif')
 photo_list = []
 for file in pathlist:
     path_in_str = str(file)
-    photo_list.append(path_in_str.split('/')[9].split('.')[0])
+    photo_list.append(path_in_str.split('/')[-1].split('.')[0])
 
 for photo_name in photo_list: 
     file_dir = Path(path + photo_name + '.csv')
