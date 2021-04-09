@@ -5,20 +5,21 @@ import numpy as np
 def calculate_peaks(vector, min_dist_between_max_peaks):
 #     max_peaks = [39, 88, 129, 180, 225, 277, 319, 373, 410, 470]
 #     min_peaks = [int((list(vector)).index(min (vector)))] * (len(max_peaks) + 1)
+    max_peaks = _max_peaks_positions(vector, min_dist_between_max_peaks)
     min_peaks = _min_peaks_positions(vector, max_peaks)
 
     return max_peaks, min_peaks
 
 
-def _max_peaks_positions(vector, min_dist_between_max_peaks):
+def _max_peaks_positions(data, min_dist_between_max_peaks):
     
-    tiempos = []
+    max_peaks = []
     intensidades = []   
     max_local=0
     for u in range (1,len(data)-1):
         if ((data[u]>data[u-1])&(data[u]>data[u+1])):
             max_local=max_local+1
-            tiempos.append (u)
+            max_peaks.append (u)
             intensidades.append (data[max_local])
 #     threshold = 1.0 / max(vector) if (max(vector) > 0) else 0
 #     possible_max_peaks = indexes(np.array(vector), thres=threshold, min_dist=min_dist_between_max_peaks)
