@@ -2,9 +2,7 @@ from PyQt5.QtCore import QRect
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QAction, \
     QMenuBar, QMenu
 
-from app.controllers.basic_analysis import Controller as BasicAnalysis
-from app.models.dyssynchrony_analysis_results import \
-    DyssynchronyAnalysisResults
+from app.controllers.new_analysis import Controller as NewAnalysis
 from app.welcome_view import WelcomeView
 
 
@@ -16,7 +14,6 @@ class MainWindow(QMainWindow):
         self._setup_menu_bar()
         self._setup_layout()
         self.replace_central_widget(WelcomeView())
-        self._dyssynchrony_analysis_result = DyssynchronyAnalysisResults()
 
     def replace_central_widget(self, widget):
         old_view = self._current_view
@@ -34,21 +31,35 @@ class MainWindow(QMainWindow):
 
     def _setup_menu_bar(self):
         menu_bar = QMenuBar(self)
-        menu_bar.setObjectName(u"menuBar")
         menu_bar.setGeometry(QRect(0, 0, 800, 20))
 
         menu_analysis_selection = QMenu(menu_bar)
         menu_bar.addAction(menu_analysis_selection.menuAction())
-        menu_analysis_selection.setTitle("Analysis Selection")
+        menu_analysis_selection.setTitle("Analysis")
 
-        action_basic_analysis = QAction(self)
-        menu_analysis_selection.addAction(action_basic_analysis)
+        new_analysis = QAction(self)
+        new_analysis.triggered.connect(lambda: self._new_analysis())
+        new_analysis.setText("New")
+        menu_analysis_selection.addAction(new_analysis)
 
-        action_basic_analysis.triggered.connect(
-            lambda _: self._start_basic_analysis())
-        action_basic_analysis.setText(u"Basic Analysis")
+        load_analysis = QAction(self)
+        load_analysis.triggered.connect(lambda: self._load_analysis())
+        load_analysis.setText("Load")
+        menu_analysis_selection.addAction(load_analysis)
+
+        save_analysis = QAction(self)
+        save_analysis.triggered.connect(lambda: self._save_analysis())
+        save_analysis.setText("Save")
+        save_analysis.setDisabled(True)
+        menu_analysis_selection.addAction(save_analysis)
 
         self.setMenuBar(menu_bar)
 
-    def _start_basic_analysis(self):
-        BasicAnalysis(self)
+    def _new_analysis(self):
+        NewAnalysis(self)
+
+    def _load_analysis(self):
+        pass
+
+    def _save_analysis(self):
+        pass

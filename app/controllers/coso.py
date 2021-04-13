@@ -3,7 +3,7 @@ from app.controllers.analysis_parametrization import \
 from app.controllers.images_selection import \
     Controller as ImagesSelectionController
 from app.models.analysis_parametrization import AnalysisParametrization
-
+from app.controllers.images_refinement import Controller as ImagesRefinementController
 
 class PreviousStep:
     def __init__(self, controller):
@@ -46,6 +46,7 @@ class Controller:
         self._previous_steps.append(previous_step)
 
     def _show_analysis_parametrization_step(self):
+        #TODO mover la cracion de las parametrizaciones default al controller
         controller = AnalysisParametrizationController.to_parametrize(
             self,
             self._default_parametrizations(),
@@ -59,7 +60,13 @@ class Controller:
     def analysis_parametrization_finished(self, parametrizations):
         self._parametrizations = parametrizations
         self.save_step()
-        self._show_data_overview_step()
+        self._show_image_refinement_step()
 
-    def _show_data_overview_step(self):
-        pass
+    def _show_image_refinement_step(self):
+        controller = ImagesRefinementController.for_parametrizations(self, self._parametrizations, lambda: self._to_previous_step())
+        self._change_current_step_to(controller)
+
+    def images_refinement_finished(self, images_refinement):
+        self._images_refinement = images_refinement
+        self.save_step()
+        #TODO SEGUIR CON LA SIGUIENTE PANTALLA

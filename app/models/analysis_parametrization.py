@@ -39,7 +39,7 @@ class AnalysisParametrization(object):
         self.image_customization = image_customization
 
     def with_existent_file(self):
-        return self.file.exists
+        return self.file.exists()
 
     def validate(self):
         return AnalysisParametrizationErrors(self.image_selection.validate(),
@@ -50,6 +50,9 @@ class AnalysisParametrization(object):
         return self.__class__(file, self.image_customization.copy(),
                               self.input_parameters.copy(),
                               self.image_customization.copy())
+
+    def file_name(self):
+        return self.file.name
 
 
 class ParametersCustomizationStrategy(object):

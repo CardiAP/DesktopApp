@@ -43,6 +43,9 @@ class ImageSelection(object):
         point2 = QPoint(self.x_end, self.y_end) if self.x_end is not None and self.y_end is not None else None
         return point1, point2
 
+    def apply_to(self, image_data):
+        return image_data[self.x_start:self.x_end][self.y_start:self.y_end]
+
     def validate(self):
         return ImageSelectionErrors(self)
 

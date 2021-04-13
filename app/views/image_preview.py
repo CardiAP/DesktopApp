@@ -4,7 +4,6 @@ from PyQt5.QtGui import QImage, QPen, QPixmap
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, \
     QDialog, QLabel, QDialogButtonBox, QVBoxLayout
 
-from app.models.image_customization import ImageCustomization
 from app.models.image_selection import ImageSelection
 
 
@@ -21,7 +20,6 @@ class ImagePreview(QGraphicsView):
 
     def apply_customization(self, image_customization):
         self._set_image(image_customization.apply_to(self._image_data))
-        self._image_customization = image_customization
 
     def _set_image(self, customized_image):
         qtimage = QImage(customized_image.data, customized_image.shape[1], customized_image.shape[0],

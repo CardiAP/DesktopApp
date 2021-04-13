@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.views.images_selection_form import ImagesSelectionForm
+from app.views.anaysis_selection_form import AnalysisSelectionForm
 
 
 class Controller(object):
@@ -16,7 +16,7 @@ class Controller(object):
         return instance
 
     def show(self):
-        widget = ImagesSelectionForm(self._selected_path)
+        widget = AnalysisSelectionForm(self._selected_path)
         self._flow_controller.show_widget(widget)
         widget.form_submitted.connect(lambda path: self._path_selected(path))
 

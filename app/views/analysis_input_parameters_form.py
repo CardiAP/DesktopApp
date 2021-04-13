@@ -2,12 +2,7 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit
 
 from app.models.input_parameters import InputParameters
-
-
-class InputErrorMessage(QLabel):
-    def __init__(self, text):
-        super().__init__(text)
-        self.setStyleSheet("color: red; font-size: 12px;")
+from app.views.input_error_message import InputErrorMessage
 
 
 class AnalysisInputParametersForm(QWidget):
