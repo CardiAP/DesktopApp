@@ -1,10 +1,10 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QPushButton, QGridLayout, QDialog, QLabel, \
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QPushButton, QGridLayout, QDialog, QLabel, \
     QDialogButtonBox
 
 
 class AnalysisResultsRefinement(QWidget):
-    finished = pyqtSignal()
+    finished = Signal()
 
     def __init__(self):
         super(AnalysisResultsRefinement, self).__init__()

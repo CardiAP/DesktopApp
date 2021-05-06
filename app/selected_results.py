@@ -1,11 +1,11 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 from app.selected_result_item import SelectedResultItem
 
 
 class SelectedResults(QWidget):
-    result_removed = pyqtSignal(int)
+    result_removed = Signal(int)
 
     def __init__(self):
         super(SelectedResults, self).__init__()

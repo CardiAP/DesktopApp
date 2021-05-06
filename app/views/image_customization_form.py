@@ -1,13 +1,13 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QGridLayout, QFrame, QLabel, QSlider, \
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QWidget, QGridLayout, QFrame, QLabel, QSlider, \
     QLineEdit
 
 from app.models.image_customization import ImageCustomization
 
 
 class ImageCustomizationForm(QWidget):
-    customization_changed = pyqtSignal(ImageCustomization)
+    customization_changed = Signal(ImageCustomization)
 
     def __init__(self, image_customization):
         super().__init__()

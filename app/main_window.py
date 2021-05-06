@@ -1,6 +1,7 @@
-from PyQt5.QtCore import QRect
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QAction, \
-    QMenuBar, QMenu
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, \
+    QMenuBar, QMenu, QScrollArea
 
 from app.controllers.new_analysis import Controller as NewAnalysis
 from app.welcome_view import WelcomeView
@@ -11,25 +12,32 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle('CardiAP')
 
-        self._setup_menu_bar()
-        self._setup_layout()
+        self.__setup_menu_bar()
+
+        self.__scroll = QScrollArea()
+        self.__scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.__scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.__scroll.setWidgetResizable(True)
+        self.setCentralWidget(self.__scroll)
+
+        self.__setup_layout()
         self.replace_central_widget(WelcomeView())
 
     def replace_central_widget(self, widget):
-        old_view = self._current_view
+        old_view = self.__current_view
         self._mainLayout.replaceWidget(old_view, widget)
-        self._current_view.close()
-        self._current_view = widget
+        self.__current_view.close()
+        self.__current_view = widget
 
-    def _setup_layout(self):
+    def __setup_layout(self):
         self._mainWidget = QWidget()
         self._mainLayout = QVBoxLayout()
         self._mainWidget.setLayout(self._mainLayout)
-        self._current_view = QWidget()
-        self._mainLayout.addWidget(self._current_view)
-        self.setCentralWidget(self._mainWidget)
+        self.__current_view = QWidget()
+        self._mainLayout.addWidget(self.__current_view)
+        self.__scroll.setWidget(self._mainWidget)
 
-    def _setup_menu_bar(self):
+    def __setup_menu_bar(self):
         menu_bar = QMenuBar(self)
         menu_bar.setGeometry(QRect(0, 0, 800, 20))
 

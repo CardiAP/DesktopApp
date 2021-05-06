@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit
+from PySide6.QtGui import QIntValidator
+from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit
 
 from app.models.input_parameters import InputParameters
 from app.views.input_error_message import InputErrorMessage

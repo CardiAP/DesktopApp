@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
 
 from app.result_data_table import ResultDataTable
 

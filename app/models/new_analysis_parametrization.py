@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 class NewAnalysisParametrization(object):
     TRANSITORY = 'TRANSITORY'
     WAVES = 'WAVES'
@@ -17,6 +20,12 @@ class NewAnalysisParametrization(object):
         errors = []
         if len(self.__filenames) <= 0:
             errors.append(self.NO_FILES_SELECTED)
-        if self.__analysis_type is None:
+        if self.__analysis_type is self.NO_TYPE_SELECTED:
             errors.append(self.NO_TYPE_SELECTED)
         return errors
+
+    def analysis_type(self):
+        return self.__analysis_type
+
+    def selected_files(self):
+        return [ Path(file) for file in self.__filenames ]

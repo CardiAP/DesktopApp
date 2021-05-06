@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTabWidget
+from PySide6.QtWidgets import QTabWidget
 
 from app.analysis_result_overview import AnalysisResultOverview
 from app.controllers.analysis_results_overview_controller import AnalysisResultOverviewController

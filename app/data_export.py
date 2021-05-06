@@ -1,5 +1,5 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QTabWidget, \
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QTabWidget, \
     QHBoxLayout, QPushButton, QDialog, QLabel, QDialogButtonBox, QFileDialog, \
     QLineEdit, QFormLayout, QCheckBox, QFrame
 
@@ -7,10 +7,10 @@ from app.controllers.data_export_controller import DataExportController
 
 
 class DataExport(QWidget):
-    finished = pyqtSignal()
-    export_format_selected = pyqtSignal(str)
-    directory_changed = pyqtSignal(str)
-    finish_with_settings = pyqtSignal()
+    finished = Signal()
+    export_format_selected = Signal(str)
+    directory_changed = Signal(str)
+    finish_with_settings = Signal()
 
     def __init__(self):
         super(DataExport, self).__init__()
@@ -61,9 +61,9 @@ class DataExport(QWidget):
 
 
 class DataExportSettings(QDialog):
-    export_format_selected = pyqtSignal(str)
-    directory_changed = pyqtSignal(str)
-    finish_with_settings = pyqtSignal()
+    export_format_selected = Signal(str)
+    directory_changed = Signal(str)
+    finish_with_settings = Signal()
 
     def __init__(self):
         super(self.__class__, self).__init__()

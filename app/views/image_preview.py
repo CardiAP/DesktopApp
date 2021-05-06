@@ -1,25 +1,26 @@
 import cv2
-from PyQt5.QtCore import pyqtSignal, QPointF, Qt, QRectF
-from PyQt5.QtGui import QImage, QPen, QPixmap
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, \
+from PySide6.QtCore import Signal, QPointF, Qt, QRectF
+from PySide6.QtGui import QImage, QPen, QPixmap
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, \
     QDialog, QLabel, QDialogButtonBox, QVBoxLayout
 
 from app.models.image_selection import ImageSelection
 
 
 class ImagePreview(QGraphicsView):
-    cropped = pyqtSignal(QPointF, QPointF)
+    cropped = Signal(QPointF, QPointF)
 
     def __init__(self, image_file, image_customization, image_selection):
-        super().__init__(QGraphicsScene())
+        super().__init__()
+        self.setScene(QGraphicsScene())
         self.setAlignment(Qt.AlignCenter)
-        self._click_pos, self._release_pos = image_selection.as_qt_points()
-        self._image_file = image_file
-        self._image_data = cv2.imread(str(self._image_file))
+        self.__click_pos, self._release_pos = image_selection.as_qt_points()
+        self.__image_file = image_file
+        self.__image_data = cv2.imread(str(self.__image_file.path))
         self.apply_customization(image_customization)
 
     def apply_customization(self, image_customization):
-        self._set_image(image_customization.apply_to(self._image_data))
+        self._set_image(image_customization.apply_to(self.__image_data))
 
     def _set_image(self, customized_image):
         qtimage = QImage(customized_image.data, customized_image.shape[1], customized_image.shape[0],
@@ -36,10 +37,10 @@ class ImagePreview(QGraphicsView):
         image_position = self._image.mapFromScene(scene_position)
 
         if self._image.contains(image_position):
-            self._click_pos = image_position
+            self.__click_pos = image_position
             self._release_pos = None
         else:
-            self._click_pos = None
+            self.__click_pos = None
             self._release_pos = None
 
     def mouseReleaseEvent(self, event):
@@ -48,33 +49,33 @@ class ImagePreview(QGraphicsView):
 
         if self._image.contains(image_position):
             self._release_pos = image_position
-            if self._click_pos is not None:
-                self.cropped.emit(self._click_pos, self._release_pos)
+            if self.__click_pos is not None:
+                self.cropped.emit(self.__click_pos, self._release_pos)
             else:
-                self._click_pos = None
+                self.__click_pos = None
         else:
-            self._click_pos = None
+            self.__click_pos = None
             self._release_pos = None
 
     def mouseMoveEvent(self, event):
         scene_position = self.mapToScene(event.pos())
         image_position = self._image.mapFromScene(scene_position)
 
-        if (self._click_pos is not None) and (
+        if (self.__click_pos is not None) and (
                 self._image.contains(image_position)):
-            self._rect.setRect(QRectF(self._click_pos, scene_position))
+            self._rect.setRect(QRectF(self.__click_pos, scene_position))
         else:
             self._rect.setRect(QRectF())
 
     def _draw_selection(self):
-        if (self._click_pos is not None) and (
+        if (self.__click_pos is not None) and (
                 self._release_pos is not None):
-            self._rect.setRect(QRectF(self._click_pos, self._release_pos))
+            self._rect.setRect(QRectF(self.__click_pos, self._release_pos))
         else:
             self._rect.setRect(QRectF())
 
     def image_selection(self):
-        return ImageSelection.from_qt_points(self._click_pos,
+        return ImageSelection.from_qt_points(self.__click_pos,
                                              self._release_pos)
 
     def handle_errors(self, errors):

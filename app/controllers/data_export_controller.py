@@ -1,6 +1,6 @@
 import os
 
-from PyQt5.QtWidgets import QTabWidget
+from PySide6.QtWidgets import QTabWidget
 
 from app.models.data_exporter import DataExporter
 from app.result_data_visualization import ResultDataVisualization

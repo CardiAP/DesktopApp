@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractScrollArea, QLabel
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractScrollArea, QLabel
 
 
 class ResultDataTable(QWidget):

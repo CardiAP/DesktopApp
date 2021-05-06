@@ -1,11 +1,11 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 
 
 class AnalysisResultOverview(QWidget):
-    result_selected = pyqtSignal()
+    result_selected = Signal()
 
     def __init__(self, parent):
         super(AnalysisResultOverview, self).__init__(parent)

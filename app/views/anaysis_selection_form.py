@@ -1,12 +1,10 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QFormLayout, QFrame, QLineEdit, \
-    QVBoxLayout, \
-    QPushButton, QGridLayout, QFileDialog
+from PySide6.QtCore import Signal
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QWidget, QFrame, QPushButton, QGridLayout, QFileDialog
 
 
 class AnalysisSelectionForm(QWidget):
-    form_submitted = pyqtSignal(str)
+    form_submitted = Signal(str)
     ALTERNATION_DISCORDANCE = 'ALTERNATION_DISCORDANCE'
     WAVES = 'WAVES'
     SPARKS = 'SPARKS'

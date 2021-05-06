@@ -1,10 +1,10 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QFormLayout, QPushButton, QDialog, QDialogButtonBox, \
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QFormLayout, QPushButton, QDialog, QDialogButtonBox, \
     QVBoxLayout
 
 
 class DataPointsSelection(QWidget):
-    finished = pyqtSignal()
+    finished = Signal()
 
     def __init__(self):
         super().__init__()

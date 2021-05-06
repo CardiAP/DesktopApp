@@ -1,8 +1,8 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QRadioButton, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QRadioButton, \
     QPushButton, QFileDialog, QGridLayout, QGroupBox
 
-from app.models.new_analysis import NewAnalysisParametrization
+from app.models.new_analysis_parametrization import NewAnalysisParametrization
 from app.views.input_error_message import InputErrorMessage
 
 
@@ -46,8 +46,14 @@ class AnalysisTypeSelection(QWidget):
         self.__error.setVisible(True)
 
     def selected_analysis_type(self):
-        return next((radio_button for radio_button in self.__radio_buttons if
-                     radio_button.isChecked()), None)
+        selected_radio_button = next(
+            (radio_button for radio_button in self.__radio_buttons if
+             radio_button.isChecked()), None)
+
+        if selected_radio_button is None:
+            return NewAnalysisParametrization.NO_TYPE_SELECTED
+        else:
+            return selected_radio_button.analysis_type
 
 
 class AnalysisImagesSelection(QWidget):
@@ -77,7 +83,8 @@ class AnalysisImagesSelection(QWidget):
 
         self.__selected_files_list = QWidget()
         self.layout.addWidget(self.__selected_files_list)
-        self.__selected_files_list.setStyleSheet("border: 1px solid black; padding: 2px")
+        self.__selected_files_list.setStyleSheet(
+            "border: 1px solid black; padding: 2px")
         self.__selected_files_list.setLayout(QVBoxLayout())
 
         for file in self.__selected_files:
@@ -134,8 +141,8 @@ class InputSection(QWidget):
         return self.__analysis_images_selection.selected_files()
 
 
-class NewAnalysisView(QWidget):
-    finished = pyqtSignal(NewAnalysisParametrization)
+class View(QWidget):
+    finished = Signal(NewAnalysisParametrization)
 
     def __init__(self):
         super().__init__()

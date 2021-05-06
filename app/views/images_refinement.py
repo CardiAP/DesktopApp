@@ -1,5 +1,5 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton, \
     QGridLayout, QHBoxLayout, QDialog, QLabel, QDialogButtonBox, QStyle
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, \
     NavigationToolbar2QT
@@ -7,8 +7,8 @@ from matplotlib.figure import Figure
 
 
 class ImagesRefinement(QWidget):
-    select_all_and_continue = pyqtSignal()
-    continue_with_selected = pyqtSignal()
+    select_all_and_continue = Signal()
+    continue_with_selected = Signal()
 
     def __init__(self, images_section, selected_images_section,
                  continue_validation):
@@ -63,7 +63,7 @@ class ImagesRefinement(QWidget):
 
 
 class ImageSection(QWidget):
-    current_image_selected = pyqtSignal()
+    current_image_selected = Signal()
 
     def __init__(self, tabs, image_data_widget):
         super().__init__()
@@ -82,7 +82,7 @@ class ImageSection(QWidget):
 
 
 class Tabs(QTabWidget):
-    tab_changed_to = pyqtSignal(str)
+    tab_changed_to = Signal(str)
 
     def __init__(self, names):
         super().__init__()
@@ -205,7 +205,7 @@ class NeedToSelectResult(QDialog):
 
 
 class SelectedImages(QWidget):
-    image_removed = pyqtSignal(str)
+    image_removed = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -235,7 +235,7 @@ class SelectedImages(QWidget):
 
 
 class SelectedImage(QWidget):
-    remove_clicked = pyqtSignal(int)
+    remove_clicked = Signal(int)
 
     def __init__(self, parent, selected_image):
         super().__init__(parent)
