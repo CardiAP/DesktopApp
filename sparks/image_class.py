@@ -116,3 +116,14 @@ class Image_Processing:
         # Calculate new histogram with desired range
         auto_result = cv2.convertScaleAbs(self, alpha=alpha, beta=beta)
         return (auto_result, alpha, beta)
+    
+    def set_threshold(self,threshold_value):
+        '''This function helps to filter images with low intensities values. Users can introduce values for helping to automatic sparks search'''
+        
+        element_mean = np.mean(self)
+        element_median = np.median(self)
+        element_sd = np.std(self)
+        
+        
+        return element_mean, element_median, element_sd
+        

@@ -29,7 +29,9 @@ class Image_Sparks:
         y_position = []
         width = []
         high = []
+        stats_list = []
         for element in contours:
+            stats = image_class.Image_Processing.set_threshold(element,1)
             img_mean = image_class.Image_Processing.track_contours (element, img_processed, original, track_number)
             img_row_mean , img_col_mean = image_class.Image_Processing.mean_pixels_intensity (img_mean[4])
             list_img_row.append(img_row_mean)
@@ -38,5 +40,6 @@ class Image_Sparks:
             y_position.append(img_mean [1])
             width.append(img_mean [2])
             high.append(img_mean [3])
+            stats_list.append(stats)
             track_number +=1
-        return list_img_col, list_img_row, x_position, y_position, width, high
+        return list_img_col, list_img_row, x_position, y_position, width, high,stats_list
