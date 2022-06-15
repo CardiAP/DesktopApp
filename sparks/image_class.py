@@ -54,7 +54,7 @@ class Image_Processing:
         dilate = cv2.dilate(canny, kernel, iterations=1)  # it increases the white region in the image or size of foreground object increases
         return dilate
 
-    def find_contourns (self):
+    def find_contours (self):
         '''Obtain elements of an image returning a list of each individual contour.
         They are Numpy arrays of (x,y) coordinates of boundary points of the object.'''
         countours = cv2.findContours(self, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)

@@ -16,7 +16,7 @@ class Image_Sparks:
         img_processed, alpha, beta = image_class.Image_Processing.automatic_brightness_and_contrast(self)
         image_class.Image_Processing.display_image(img_processed, 'Image processed',)
         filtered = image_class.Image_Processing.image_filtration (img_processed, 3, 100)
-        contours = image_class.Image_Processing.find_contourns(filtered) # Obtains elements by contours
+        contours = image_class.Image_Processing.find_contours(filtered) # Obtains elements by contours
         return contours, img_processed
 
     def Image_analysis(contours, img_processed, original):
