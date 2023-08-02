@@ -54,7 +54,6 @@ def _apply_bright(image_data, bright):
 # For smoothing we are using a bilateral filter:
 # https://docs.opencv.org/2.4/modules/imgproc/doc/filtering.html#bilateralfilter
 def get_image_data(image):
-    # TODO estos parametros queremos cambiarlos dependiendo de la imagen?
     image_matrix = cv2.bilateralFilter(image, 20, 300, 300)
     image_matrix = cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
     return image_matrix
@@ -67,7 +66,24 @@ def crop_vertical(image_matrix, pixel_start, pixel_end):
 def crop_horizontal(image_matrix, pixel_start, pixel_end):
     return image_matrix[0:len(image_matrix), pixel_start:pixel_end]
 
-
+def multiroi(image_matrix):
+    ''' Selects ROIs on the given image. Function creates a window and allows user to select a ROIs using mouse. Controls: use `space` or `enter` to finish current selection and start a new one, use `esc` to terminate multiple ROI selection process.'''
+    SelectedRegions = []
+    #select ROIs function
+    ROIs = cv2.selectROIs("Select Rois", image_matrix)
+    #Crop selected roi from raw image
+    for rect in ROIs:
+        x1=rect[0]
+        y1=rect[1]
+        x2=rect[2]
+        y2=rect[3]
+        #crop roi from original image
+        SelectedRegions.append(image_matrix[y1:y1+y2,x1:x1+x2])
+    #hold window
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return SelectedRegions
+    
 # Receives a 2d Martix and the with of the slice
 # Returns a 3d Matrix that has the received matrix splited verticaly by the slice width
 # Can raise ValueError if the slice width is bigger than the x axis of the image
@@ -85,10 +101,9 @@ def split_vertically_by(image_matrix, slice_width):
     width_to_split = image_width - left_over_count
 
     splited_columns = np.asarray([
-        np.asarray(
-            _split_column(row[0:width_to_split], slice_width) +
-            [row[width_to_split:image_width]]) for row in image_matrix
-    ])
+        np.asarray(_split_column(row[0:width_to_split], slice_width) +
+            [row[width_to_split:image_width]], dtype=np.ndarray) for row in image_matrix
+    ], dtype=np.ndarray)
     return np.transpose(splited_columns, (1, 0))
 
 
